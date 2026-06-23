@@ -1,0 +1,33 @@
+import type { GlossaryTerm } from "./types";
+
+export const glossaryTerms: GlossaryTerm[] = [
+  { term: "Acidez", short: "Brilho e vivacidade na xícara.", detail: "Não significa azedo. Uma boa acidez pode lembrar frutas cítricas, maçã ou frutas vermelhas.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Aftertaste", short: "Sabor que permanece depois do gole.", detail: "Também chamado de finalização. Pode ser curto, longo, doce, seco, limpo ou complexo.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Aroma", short: "Percepções pelo olfato.", detail: "Pode lembrar chocolate, frutas, flores, especiarias, castanhas, mel ou fermentados.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Blend", short: "Mistura de cafés diferentes.", detail: "Pode buscar equilíbrio, consistência, custo, crema ou um perfil sensorial específico.", category: "Qualidade", relatedPath: "/fundamentos#especial" },
+  { term: "Bloom", short: "Pré-infusão em métodos filtrados.", detail: "Ajuda a liberar gases e hidratar o pó antes da extração principal.", category: "Preparo", relatedPath: "/metodos#v60" },
+  { term: "Body/corpo", short: "Peso e textura na boca.", detail: "Um café pode ser leve, médio, encorpado, cremoso ou aveludado.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Crema", short: "Camada superficial do espresso.", detail: "Surge na extração sob pressão e ajuda na apresentação de bebidas com leite.", category: "Espresso", relatedPath: "/metodos#espresso" },
+  { term: "Cupping", short: "Prova padronizada de cafés.", detail: "Método usado para comparar amostras, avaliar qualidade e calibrar percepção sensorial.", category: "Qualidade", relatedPath: "/profissionais" },
+  { term: "Dose", short: "Quantidade de café usada.", detail: "Afeta concentração, rendimento e equilíbrio da receita.", category: "Barismo", relatedPath: "/barismo#fundamentos" },
+  { term: "Extração", short: "Água dissolvendo compostos do café.", detail: "Extração insuficiente tende a acidez agressiva; extração excessiva tende a amargor e secura.", category: "Barismo", relatedPath: "/barismo#diagnostico" },
+  { term: "Fermentação", short: "Transformação microbiológica no pós-colheita.", detail: "Quando controlada, pode criar complexidade; sem controle, pode gerar defeitos.", category: "Processo", relatedPath: "/do-campo-a-xicara#fermentacoes" },
+  { term: "Finalização", short: "Persistência do sabor após beber.", detail: "Pode revelar doçura, limpeza, secura, amargor ou complexidade.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Honey", short: "Processo com mucilagem parcial.", detail: "Parte da mucilagem fica no grão durante a secagem, equilibrando doçura, corpo e acidez.", category: "Processo", relatedPath: "/do-campo-a-xicara#honey" },
+  { term: "Lavado", short: "Processo com remoção de polpa antes da secagem.", detail: "Costuma gerar bebidas mais limpas, ácidas e delicadas.", category: "Processo", relatedPath: "/do-campo-a-xicara#lavado" },
+  { term: "Microespuma", short: "Leite vaporizado fino e brilhante.", detail: "Textura ideal para bebidas cremosas e desenhos de latte art.", category: "Latte Art", relatedPath: "/latte-art#microespuma" },
+  { term: "Moagem", short: "Tamanho das partículas do café.", detail: "Define velocidade de extração. Fina extrai mais rápido; grossa extrai mais lentamente.", category: "Preparo", relatedPath: "/barismo#fundamentos" },
+  { term: "Natural", short: "Processo em que o fruto seca inteiro.", detail: "Pode gerar doçura, corpo e notas frutadas, mas exige controle para evitar defeitos.", category: "Processo", relatedPath: "/do-campo-a-xicara#natural" },
+  { term: "Perfil de torra", short: "Estratégia de tempo e calor na torra.", detail: "A torra deve ser adequada ao grão, método e objetivo sensorial.", category: "Torra", relatedPath: "/do-campo-a-xicara#torra" },
+  { term: "Proporção", short: "Relação entre café e água.", detail: "Exemplo: 1:16 significa 1 parte de café para 16 partes de água.", category: "Barismo", relatedPath: "/barismo#fundamentos" },
+  { term: "Q-Grader", short: "Avaliador certificado de cafés.", detail: "Profissional treinado em protocolos internacionais de análise sensorial.", category: "Profissões", relatedPath: "/profissionais" },
+  { term: "Rastreabilidade", short: "Identificação de origem, lote e processo.", detail: "Ajuda a conectar consumidor, produtor, fazenda, região e qualidade.", category: "Qualidade", relatedPath: "/fundamentos#especial" },
+  { term: "Rendimento", short: "Quantidade de bebida extraída.", detail: "No espresso, dose e rendimento ajudam a controlar concentração e equilíbrio.", category: "Espresso", relatedPath: "/barismo#fundamentos" },
+  { term: "Robusta", short: "Variedade de Canephora.", detail: "Associada a resistência, cafeína, corpo, intensidade e crema.", category: "Espécies", relatedPath: "/fundamentos#arabica-canephora" },
+  { term: "Sensory/sensorial", short: "Leitura de aroma, sabor e textura.", detail: "Inclui aroma, acidez, doçura, corpo, amargor e finalização.", category: "Sensorial", relatedPath: "/fundamentos#sensorial" },
+  { term: "Terroir", short: "Fatores naturais e humanos da origem.", detail: "Inclui solo, altitude, clima, umidade, variedade, manejo e tradição local.", category: "Origem", relatedPath: "/origens-e-mapas" },
+  { term: "Torra clara", short: "Torra que preserva origem e acidez.", detail: "Muito usada para cafés especiais e métodos coados.", category: "Torra", relatedPath: "/do-campo-a-xicara#torra" },
+  { term: "Torra média", short: "Torra de equilíbrio.", detail: "Costuma equilibrar doçura, acidez, corpo e aroma.", category: "Torra", relatedPath: "/do-campo-a-xicara#torra" },
+  { term: "Torra escura", short: "Torra com notas tostadas e amargor.", detail: "Pode trazer intensidade, mas também mascarar características da origem.", category: "Torra", relatedPath: "/do-campo-a-xicara#torra" },
+  { term: "V60", short: "Método cônico de preparo filtrado.", detail: "Dá grande controle sobre fluxo, despejo, moagem e clareza da bebida.", category: "Métodos", relatedPath: "/metodos#v60" }
+];
