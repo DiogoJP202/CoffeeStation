@@ -1,0 +1,19 @@
+{
+  "name": "Universo do Café",
+  "short_name": "Café",
+  "description": "Academia aberta e gratuita para estudar café, barismo, métodos, origens e glossário técnico.",
+  "lang": "pt-BR",
+  "start_url": "/CoffeeStation/",
+  "scope": "/CoffeeStation/",
+  "display": "standalone",
+  "background_color": "#120C08",
+  "theme_color": "#120C08",
+  "icons": [
+    {
+      "src": "/CoffeeStation/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
