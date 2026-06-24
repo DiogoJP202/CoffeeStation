@@ -5,6 +5,13 @@ O site foi preparado para aceitar fotos reais sem mudar a arquitetura. Use image
 Assets gerados para esta versão:
 
 - `coffee-hero.webp` / `coffee-hero-960.webp` — imagem principal da primeira dobra.
+- `fundamentals-roasted-seeds.webp` / `fundamentals-roasted-seeds.jpg` — imagem editorial de grãos torrados para fundamentos.
+- `fundamentals-coffeehouse.webp` / `fundamentals-coffeehouse.jpg` — imagem editorial de cafeteria e cultura do café.
+- `fundamentals-coffee-cherries.webp` / `fundamentals-coffee-cherries.jpg` — imagem editorial de cerejas maduras no cafeeiro.
+- `fundamentals-varieties.webp` / `fundamentals-varieties.jpg` — imagem editorial comparando grãos e amostras.
+- `fundamentals-terroir.webp` / `fundamentals-terroir.jpg` — imagem editorial de terroir, origem, solo e altitude.
+- `fundamentals-quality-control.webp` / `fundamentals-quality-control.jpg` — imagem editorial de controle de qualidade.
+- `fundamentals-cupping.webp` / `fundamentals-cupping.jpg` — imagem editorial de cupping e leitura sensorial.
 - `method-coado.webp` / `method-coado.jpg` — imagem editorial de coado tradicional.
 - `method-melitta.webp` / `method-melitta.jpg` — imagem editorial de preparo em Melitta.
 - `method-kalita.webp` / `method-kalita.jpg` — imagem editorial de preparo em Kalita.

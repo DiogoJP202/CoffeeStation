@@ -9,6 +9,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Bebida agrícola", "Produto cultural", "Experiência sensorial"],
     media: {
       title: "Sementes torradas",
+      src: "/images/fundamentals-roasted-seeds.webp",
       alt: "Grãos de café torrados vistos de perto",
       caption: "O grão que chega ao moedor começou como semente dentro de um fruto.",
       tone: "beans"
@@ -22,6 +23,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Origem associada à Etiópia", "Cafeterias como espaços de conversa", "Brasil como protagonista mundial"],
     media: {
       title: "Cafeteria como espaço social",
+      src: "/images/fundamentals-coffeehouse.webp",
       alt: "Ambiente de cafeteria usado para estudo e conversa",
       caption: "Cafeterias ajudaram a transformar o café em rito de encontro, leitura e trabalho.",
       tone: "brew"
@@ -49,6 +51,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Cereja de café", "Semente", "Manejo agrícola"],
     media: {
       title: "Cerejas de café",
+      src: "/images/fundamentals-coffee-cherries.webp",
       alt: "Cerejas de café maduras em uma planta",
       caption: "O ponto de maturação influencia doçura, adstringência e equilíbrio.",
       tone: "farm"
@@ -62,6 +65,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Arábica: floral, frutado, delicado", "Canephora: corpo, potência, cafeína", "Qualidade depende de cuidado, não só da espécie"],
     media: {
       title: "Espécies e variedades",
+      src: "/images/fundamentals-varieties.webp",
       alt: "Comparativo visual entre grãos de diferentes cafés",
       caption: "Espécie, variedade e terroir ajudam a formar a identidade da bebida.",
       tone: "beans"
@@ -75,6 +79,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Solo e altitude", "Clima e chuva", "Tradição local"],
     media: {
       title: "Mapa sensorial de origem",
+      src: "/images/fundamentals-terroir.webp",
       alt: "Mapa estilizado de regiões produtoras de café",
       caption: "Origens únicas permitem estudar a identidade de uma região, fazenda ou microlote.",
       tone: "map"
@@ -88,6 +93,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Origem identificável", "Bebida limpa", "Valorização da cadeia"],
     media: {
       title: "Controle de qualidade",
+      src: "/images/fundamentals-quality-control.webp",
       alt: "Amostras de café organizadas para avaliação sensorial",
       caption: "Rastreabilidade ajuda a conectar xícara, lote, produtor e processo.",
       tone: "tools"
@@ -101,6 +107,7 @@ export const coffeeBasics: ConceptBlock[] = [
     bullets: ["Aroma", "Acidez", "Doçura", "Corpo", "Finalização"],
     media: {
       title: "Cupping sensorial",
+      src: "/images/fundamentals-cupping.webp",
       alt: "Xícaras de prova para avaliação de café",
       caption: "Provar com atenção transforma 'forte ou fraco' em uma leitura mais precisa.",
       tone: "tools"
