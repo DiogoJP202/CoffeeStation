@@ -9,7 +9,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "A base envolve genética, nutrição, irrigação, poda, sustentabilidade e planejamento agrícola.",
     professional: "Produtor e agrônomo",
     relatedPath: "/profissionais",
-    media: { title: "Lavoura planejada", alt: "Linhas de cafeeiros em uma lavoura", caption: "A qualidade começa anos antes da colheita.", tone: "farm" }
+    media: { title: "Lavoura planejada", src: "/images/journey-planting.webp", alt: "Linhas de cafeeiros em uma lavoura", caption: "A qualidade começa anos antes da colheita.", tone: "farm" }
   },
   {
     id: "cultivo",
@@ -19,7 +19,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "O cultivo exige poda, nutrição, controle de pragas, irrigação quando necessária e cuidado com sustentabilidade.",
     professional: "Produtor e agrônomo",
     relatedPath: "/fundamentos#planta",
-    media: { title: "Manejo do cafeeiro", alt: "Cafeeiro saudável em cultivo", caption: "Solo e manejo influenciam produtividade e sabor.", tone: "farm" }
+    media: { title: "Manejo do cafeeiro", src: "/images/journey-cultivation.webp", alt: "Cafeeiro saudável em cultivo", caption: "Solo e manejo influenciam produtividade e sabor.", tone: "farm" }
   },
   {
     id: "florada",
@@ -29,7 +29,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "A florada indica o início de um ciclo decisivo e ajuda a prever janela de colheita.",
     professional: "Produtor",
     relatedPath: "/do-campo-a-xicara#colheita",
-    media: { title: "Florada do café", alt: "Flores brancas em ramo de cafeeiro", caption: "Um dos momentos mais bonitos e importantes da lavoura.", tone: "farm" }
+    media: { title: "Florada do café", src: "/images/journey-flowering.webp", alt: "Flores brancas em ramo de cafeeiro", caption: "Um dos momentos mais bonitos e importantes da lavoura.", tone: "farm" }
   },
   {
     id: "maturacao",
@@ -39,7 +39,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Frutos verdes podem trazer adstringência; frutos passados podem trazer fermentações indesejadas.",
     professional: "Produtor",
     relatedPath: "/fundamentos#planta",
-    media: { title: "Cerejas maduras", alt: "Cerejas de café vermelhas e amarelas", caption: "Maturação correta é uma ponte entre campo e xícara.", tone: "farm" }
+    media: { title: "Cerejas maduras", src: "/images/journey-ripening.webp", alt: "Cerejas de café vermelhas e amarelas", caption: "Maturação correta é uma ponte entre campo e xícara.", tone: "farm" }
   },
   {
     id: "colheita",
@@ -49,7 +49,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Colheita seletiva é mais trabalhosa, mas favorece lotes mais uniformes.",
     professional: "Produtor e equipe de colheita",
     relatedPath: "/profissionais",
-    media: { title: "Colheita", alt: "Mãos colhendo cerejas de café", caption: "A seleção no campo reduz defeitos depois.", tone: "farm" }
+    media: { title: "Colheita", src: "/images/journey-harvest.webp", alt: "Mãos colhendo cerejas de café", caption: "A seleção no campo reduz defeitos depois.", tone: "farm" }
   },
   {
     id: "selecao",
@@ -59,7 +59,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Pode acontecer por triagem manual, água, equipamentos ou combinação de métodos.",
     professional: "Processador pós-colheita",
     relatedPath: "/profissionais",
-    media: { title: "Seleção de frutos", alt: "Frutos de café separados por maturação", caption: "Uniformidade dá mais clareza ao lote.", tone: "farm" }
+    media: { title: "Seleção de frutos", src: "/images/journey-sorting.webp", alt: "Frutos de café separados por maturação", caption: "Uniformidade dá mais clareza ao lote.", tone: "farm" }
   },
   {
     id: "natural",
@@ -69,7 +69,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Exige controle cuidadoso para evitar fermentações indesejadas e secagem irregular.",
     professional: "Processador pós-colheita",
     relatedPath: "/glossario",
-    media: { title: "Processo natural", alt: "Cafés secando com fruto inteiro", caption: "O fruto inteiro participa mais intensamente do perfil sensorial.", tone: "farm" }
+    media: { title: "Processo natural", src: "/images/journey-natural-process.webp", alt: "Cafés secando com fruto inteiro", caption: "O fruto inteiro participa mais intensamente do perfil sensorial.", tone: "farm" }
   },
   {
     id: "lavado",
@@ -79,7 +79,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "É útil quando o objetivo é evidenciar transparência e definição sensorial.",
     professional: "Processador pós-colheita",
     relatedPath: "/glossario",
-    media: { title: "Processo lavado", alt: "Grãos de café sendo lavados no pós-colheita", caption: "Tende a valorizar limpeza e nitidez.", tone: "farm" }
+    media: { title: "Processo lavado", src: "/images/journey-washed-process.webp", alt: "Grãos de café sendo lavados no pós-colheita", caption: "Tende a valorizar limpeza e nitidez.", tone: "farm" }
   },
   {
     id: "honey",
@@ -89,7 +89,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "O resultado depende da quantidade de mucilagem, tempo e controle da secagem.",
     professional: "Processador pós-colheita",
     relatedPath: "/glossario",
-    media: { title: "Processo honey", alt: "Café em secagem com mucilagem parcial", caption: "Um meio-termo sensorial entre natural e lavado.", tone: "farm" }
+    media: { title: "Processo honey", src: "/images/journey-honey-process.webp", alt: "Café em secagem com mucilagem parcial", caption: "Um meio-termo sensorial entre natural e lavado.", tone: "farm" }
   },
   {
     id: "fermentacoes",
@@ -99,7 +99,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Quando mal controlada, pode gerar defeitos. Requer higiene, registro e conhecimento sensorial.",
     professional: "Processador e provador",
     relatedPath: "/biblioteca",
-    media: { title: "Fermentação", alt: "Tanques de fermentação de café", caption: "Controle é a diferença entre complexidade e defeito.", tone: "tools" }
+    media: { title: "Fermentação", src: "/images/journey-fermentation.webp", alt: "Tanques de fermentação de café", caption: "Controle é a diferença entre complexidade e defeito.", tone: "tools" }
   },
   {
     id: "secagem",
@@ -109,7 +109,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Secagem rápida demais, lenta demais ou irregular pode comprometer o lote.",
     professional: "Processador pós-colheita",
     relatedPath: "/do-campo-a-xicara#beneficiamento",
-    media: { title: "Secagem", alt: "Café secando em camas suspensas", caption: "Secagem é conservação e construção de estabilidade.", tone: "farm" }
+    media: { title: "Secagem", src: "/images/journey-drying.webp", alt: "Café secando em camas suspensas", caption: "Secagem é conservação e construção de estabilidade.", tone: "farm" }
   },
   {
     id: "beneficiamento",
@@ -119,7 +119,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Ajuda a padronizar o lote, separar impurezas e preparar o café para compradores.",
     professional: "Beneficiador e classificador",
     relatedPath: "/profissionais",
-    media: { title: "Beneficiamento", alt: "Café verde beneficiado", caption: "Do fruto seco ao grão verde comercializável.", tone: "tools" }
+    media: { title: "Beneficiamento", src: "/images/journey-milling.webp", alt: "Café verde beneficiado", caption: "Do fruto seco ao grão verde comercializável.", tone: "tools" }
   },
   {
     id: "classificacao",
@@ -129,7 +129,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Conecta critérios físicos e sensoriais para orientar valor comercial, uso e comunicação de qualidade.",
     professional: "Classificador e provador",
     relatedPath: "/profissionais",
-    media: { title: "Classificação", alt: "Amostras de café verde em mesa de classificação", caption: "Qualidade precisa ser observada e comunicada.", tone: "tools" }
+    media: { title: "Classificação", src: "/images/journey-classification.webp", alt: "Amostras de café verde em mesa de classificação", caption: "Qualidade precisa ser observada e comunicada.", tone: "tools" }
   },
   {
     id: "armazenamento",
@@ -139,7 +139,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Café mal armazenado envelhece mais rápido e perde clareza sensorial.",
     professional: "Produtor, armazém e torrefação",
     relatedPath: "/fundamentos#especial",
-    media: { title: "Armazenamento", alt: "Sacas de café armazenadas em ambiente seco", caption: "Preservar também é produzir qualidade.", tone: "farm" }
+    media: { title: "Armazenamento", src: "/images/journey-storage.webp", alt: "Sacas de café armazenadas em ambiente seco", caption: "Preservar também é produzir qualidade.", tone: "farm" }
   },
   {
     id: "torra",
@@ -149,7 +149,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Torras claras preservam origem; médias equilibram; escuras aumentam notas tostadas e amargor.",
     professional: "Mestre de torra",
     relatedPath: "/profissionais",
-    media: { title: "Torra", alt: "Grãos de café em processo de torra", caption: "A torra deve servir ao grão e ao método.", tone: "roast" }
+    media: { title: "Torra", src: "/images/journey-roasting.webp", alt: "Grãos de café em processo de torra", caption: "A torra deve servir ao grão e ao método.", tone: "roast" }
   },
   {
     id: "moagem",
@@ -159,7 +159,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Fina demais pode gerar amargor; grossa demais pode gerar bebida fraca e ácida.",
     professional: "Barista",
     relatedPath: "/barismo",
-    media: { title: "Moagem", alt: "Café moído em diferentes granulometrias", caption: "Moagem é uma das alavancas mais importantes do preparo.", tone: "tools" }
+    media: { title: "Moagem", src: "/images/journey-grinding.webp", alt: "Café moído em diferentes granulometrias", caption: "Moagem é uma das alavancas mais importantes do preparo.", tone: "tools" }
   },
   {
     id: "preparo",
@@ -169,7 +169,7 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Medir, observar e ajustar são hábitos centrais para consistência.",
     professional: "Barista",
     relatedPath: "/metodos",
-    media: { title: "Preparo", alt: "Café sendo preparado em método manual", caption: "A técnica final traduz toda a cadeia.", tone: "brew" }
+    media: { title: "Preparo", src: "/images/journey-brewing.webp", alt: "Café sendo preparado em método manual", caption: "A técnica final traduz toda a cadeia.", tone: "brew" }
   },
   {
     id: "servico",
@@ -179,6 +179,6 @@ export const coffeeJourney: JourneyStep[] = [
     detail: "Serviço inclui explicar origem, orientar consumo e entregar consistência.",
     professional: "Barista e gestor de cafeteria",
     relatedPath: "/profissionais",
-    media: { title: "Serviço", alt: "Barista servindo uma xícara de café", caption: "A xícara final também é uma experiência humana.", tone: "brew" }
+    media: { title: "Serviço", src: "/images/journey-service.webp", alt: "Barista servindo uma xícara de café", caption: "A xícara final também é uma experiência humana.", tone: "brew" }
   }
 ];

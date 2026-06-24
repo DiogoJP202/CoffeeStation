@@ -1733,6 +1733,7 @@ const getOgImageForPath = (path: string) => {
 
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
+  if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
 
   return "/images/og-coffee-study.jpg";
 };

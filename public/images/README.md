@@ -12,6 +12,24 @@ Assets gerados para esta versão:
 - `fundamentals-terroir.webp` / `fundamentals-terroir.jpg` — imagem editorial de terroir, origem, solo e altitude.
 - `fundamentals-quality-control.webp` / `fundamentals-quality-control.jpg` — imagem editorial de controle de qualidade.
 - `fundamentals-cupping.webp` / `fundamentals-cupping.jpg` — imagem editorial de cupping e leitura sensorial.
+- `journey-planting.webp` / `journey-planting.jpg` — imagem editorial de plantio.
+- `journey-cultivation.webp` / `journey-cultivation.jpg` — imagem editorial de cultivo e manejo.
+- `journey-flowering.webp` / `journey-flowering.jpg` — imagem editorial de florada.
+- `journey-ripening.webp` / `journey-ripening.jpg` — imagem editorial de maturação.
+- `journey-harvest.webp` / `journey-harvest.jpg` — imagem editorial de colheita.
+- `journey-sorting.webp` / `journey-sorting.jpg` — imagem editorial de seleção de frutos.
+- `journey-natural-process.webp` / `journey-natural-process.jpg` — imagem editorial de processo natural.
+- `journey-washed-process.webp` / `journey-washed-process.jpg` — imagem editorial de processo lavado.
+- `journey-honey-process.webp` / `journey-honey-process.jpg` — imagem editorial de processo honey.
+- `journey-fermentation.webp` / `journey-fermentation.jpg` — imagem editorial de fermentação controlada.
+- `journey-drying.webp` / `journey-drying.jpg` — imagem editorial de secagem.
+- `journey-milling.webp` / `journey-milling.jpg` — imagem editorial de beneficiamento.
+- `journey-classification.webp` / `journey-classification.jpg` — imagem editorial de classificação.
+- `journey-storage.webp` / `journey-storage.jpg` — imagem editorial de armazenamento.
+- `journey-roasting.webp` / `journey-roasting.jpg` — imagem editorial de torra.
+- `journey-grinding.webp` / `journey-grinding.jpg` — imagem editorial de moagem.
+- `journey-brewing.webp` / `journey-brewing.jpg` — imagem editorial de preparo.
+- `journey-service.webp` / `journey-service.jpg` — imagem editorial de serviço.
 - `method-coado.webp` / `method-coado.jpg` — imagem editorial de coado tradicional.
 - `method-melitta.webp` / `method-melitta.jpg` — imagem editorial de preparo em Melitta.
 - `method-kalita.webp` / `method-kalita.jpg` — imagem editorial de preparo em Kalita.
