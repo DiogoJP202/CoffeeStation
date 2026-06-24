@@ -2,6 +2,14 @@
 
 O site foi preparado para aceitar fotos reais sem mudar a arquitetura. Use imagens livres/licenciadas e salve com nomes claros.
 
+Assets gerados para esta versão:
+
+- `method-v60.png` — imagem editorial de preparo em V60.
+- `method-espresso.png` — imagem editorial de extração de espresso.
+- `method-prensa.png` — imagem editorial de prensa francesa.
+- `method-cold-brew.png` — imagem editorial de cold brew.
+- `og-coffee-study.png` — imagem ampla para compartilhamento social.
+
 Sugestões de assets:
 
 - `coffee-beans-closeup.jpg` — grãos torrados em close, para fundamentos e sensorial.

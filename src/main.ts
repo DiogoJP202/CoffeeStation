@@ -194,7 +194,7 @@ const renderMedia = (media: MediaVisual, className = "") => {
       </div>`;
 
   return `
-    <figure class="media-card ${className}">
+    <figure class="media-card ${media.src ? "has-image" : ""} ${className}">
       <div class="media-frame">${visual}</div>
       <figcaption>
         <strong>${media.caption}</strong>
@@ -1544,16 +1544,28 @@ const getMetaForPath = (path: string) => {
   return pageMeta["/"];
 };
 
+const getOgImageForPath = (path: string) => {
+  if (path.startsWith("/metodos/")) {
+    const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
+    if (method?.media.src) return method.media.src;
+  }
+
+  return "/images/og-coffee-study.png";
+};
+
 const updateMeta = (path: string) => {
   const meta = getMetaForPath(path);
   const canonicalUrl = `${window.location.origin}${routeHref(path)}`;
-  const ogImageUrl = new URL(assetPath("/images/coffee-hero.png"), window.location.origin).href;
+  const ogImageUrl = new URL(assetPath(getOgImageForPath(path)), window.location.origin).href;
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
   document.querySelector('meta[property="og:image"]')?.setAttribute("content", ogImageUrl);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", meta.title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", meta.description);
+  document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", ogImageUrl);
 
   let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!canonical) {
@@ -1576,6 +1588,7 @@ const updateMeta = (path: string) => {
     name: meta.title,
     description: meta.description,
     url: canonicalUrl,
+    image: ogImageUrl,
     inLanguage: "pt-BR",
     isAccessibleForFree: true,
     provider: {

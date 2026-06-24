@@ -95,6 +95,7 @@ export const brewMethods: BrewMethod[] = [
       title: "V60",
       alt: "Preparo de café em V60 com chaleira de bico fino",
       caption: "Controle fino de despejo e moagem para uma xícara limpa.",
+      src: "/images/method-v60.png",
       tone: "brew"
     }
   },
@@ -288,6 +289,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Prensa Francesa",
       alt: "Café em prensa francesa",
       caption: "Infusão simples, corpo alto e textura presente.",
+      src: "/images/method-prensa.png",
       tone: "brew"
     }
   },
@@ -434,6 +436,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Espresso",
       alt: "Extração de espresso com crema",
       caption: "O método mais exigente em consistência e equipamento.",
+      src: "/images/method-espresso.png",
       tone: "espresso"
     }
   },
@@ -482,6 +485,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Cold Brew",
       alt: "Cold brew servido com gelo em copo transparente",
       caption: "Doçura, suavidade e refrescância.",
+      src: "/images/method-cold-brew.png",
       tone: "brew"
     }
   }
