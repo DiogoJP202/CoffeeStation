@@ -52,6 +52,16 @@ const quizStorageKey = "universo-cafe-quiz-v1";
 const extractionJournalStorageKey = "universo-cafe-extraction-journal-v1";
 let lastTrackedPath = "";
 
+type JsonLdValue = string | number | boolean | null | JsonLdValue[] | { [key: string]: JsonLdValue };
+type JsonLdObject = { [key: string]: JsonLdValue };
+
+const siteName = "Universo do Café";
+const productionOrigin = "https://diogojp202.github.io";
+const productionBasePath = "/CoffeeStation";
+const productionSiteUrl = `${productionOrigin}${productionBasePath}/`;
+const organizationId = `${productionSiteUrl}#organization`;
+const websiteId = `${productionSiteUrl}#website`;
+
 const escapeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escapeText = escapeAttr;
@@ -1696,12 +1706,242 @@ const getOgImageForPath = (path: string) => {
   return "/images/og-coffee-study.png";
 };
 
+const getCanonicalUrl = (path: string) => `${productionOrigin}${productionBasePath}${path === "/" ? "/" : path}`;
+
+const getPublicAssetUrl = (path: string) => {
+  if (/^https?:\/\//.test(path)) return path;
+  return `${productionOrigin}${productionBasePath}/${path.replace(/^\/+/, "")}`;
+};
+
+const getReadablePageName = (path: string) => {
+  const navItem = mainNav.find((item) => item.path === path);
+  if (navItem) return navItem.label;
+
+  if (path.startsWith("/metodos/")) {
+    const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
+    if (method) return method.name;
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    const professional = professionals.find((item) => `/profissionais/${slugify(item.title)}` === path);
+    if (professional) return professional.title;
+  }
+
+  if (path.startsWith("/glossario/")) {
+    const term = glossaryTerms.find((item) => `/glossario/${slugify(item.term)}` === path);
+    if (term) return term.term;
+  }
+
+  return getMetaForPath(path).title.split(" — ")[0];
+};
+
+const getBreadcrumbsForPath = (path: string) => {
+  const breadcrumbs = [{ name: "Início", path: "/" }];
+  if (path === "/") return breadcrumbs;
+
+  if (path.startsWith("/metodos/")) {
+    breadcrumbs.push({ name: "Métodos", path: "/metodos" }, { name: getReadablePageName(path), path });
+    return breadcrumbs;
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    breadcrumbs.push({ name: "Profissionais", path: "/profissionais" }, { name: getReadablePageName(path), path });
+    return breadcrumbs;
+  }
+
+  if (path.startsWith("/glossario/")) {
+    breadcrumbs.push({ name: "Glossário", path: "/glossario" }, { name: getReadablePageName(path), path });
+    return breadcrumbs;
+  }
+
+  breadcrumbs.push({ name: getReadablePageName(path), path });
+  return breadcrumbs;
+};
+
+const getMainEntityForPath = (path: string, ogImageUrl: string): JsonLdObject | undefined => {
+  if (path.startsWith("/metodos/")) {
+    const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
+    if (!method) return undefined;
+
+    return {
+      "@type": "HowTo",
+      name: `Como preparar ${method.name}`,
+      description: method.description,
+      image: ogImageUrl,
+      tool: method.equipment.map((name) => ({ "@type": "HowToTool", name })),
+      supply: [
+        { "@type": "HowToSupply", name: method.recipe.dose },
+        { "@type": "HowToSupply", name: method.recipe.water }
+      ],
+      step: method.steps.map((step, index) => ({
+        "@type": "HowToStep",
+        position: index + 1,
+        name: step,
+        text: step
+      }))
+    };
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    const professional = professionals.find((item) => `/profissionais/${slugify(item.title)}` === path);
+    if (!professional) return undefined;
+
+    return {
+      "@type": "Occupation",
+      name: professional.title,
+      description: `${professional.role} ${professional.impact}`,
+      skills: professional.skills.join(", "),
+      responsibilities: professional.role,
+      occupationLocation: {
+        "@type": "Place",
+        name: professional.place
+      }
+    };
+  }
+
+  if (path.startsWith("/glossario/")) {
+    const term = glossaryTerms.find((item) => `/glossario/${slugify(item.term)}` === path);
+    if (!term) return undefined;
+
+    return {
+      "@type": "DefinedTerm",
+      name: term.term,
+      description: `${term.short} ${term.detail}`,
+      termCode: term.category,
+      inDefinedTermSet: getCanonicalUrl("/glossario")
+    };
+  }
+
+  if (path === "/metodos") {
+    return {
+      "@type": "ItemList",
+      name: "Métodos de preparo de café",
+      itemListElement: brewMethods.map((method, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: method.name,
+        description: method.description,
+        url: getCanonicalUrl(`/metodos/${method.id}`)
+      }))
+    };
+  }
+
+  if (path === "/profissionais") {
+    return {
+      "@type": "ItemList",
+      name: "Profissionais da cadeia do café",
+      itemListElement: professionals.map((professional, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: professional.title,
+        description: professional.role,
+        url: getCanonicalUrl(`/profissionais/${slugify(professional.title)}`)
+      }))
+    };
+  }
+
+  if (path === "/glossario") {
+    return {
+      "@type": "DefinedTermSet",
+      name: "Glossário do café",
+      hasDefinedTerm: glossaryTerms.map((term) => ({
+        "@type": "DefinedTerm",
+        name: term.term,
+        description: term.short,
+        url: getCanonicalUrl(`/glossario/${slugify(term.term)}`)
+      }))
+    };
+  }
+
+  if (path === "/quizzes") {
+    return {
+      "@type": "LearningResource",
+      name: "Quizzes de café e barismo",
+      learningResourceType: "Quiz",
+      isAccessibleForFree: true
+    };
+  }
+
+  if (path === "/simuladores") {
+    return {
+      "@type": "WebApplication",
+      name: "Simuladores de barismo",
+      applicationCategory: "EducationalApplication",
+      operatingSystem: "Web",
+      isAccessibleForFree: true
+    };
+  }
+
+  return undefined;
+};
+
+const getStructuredDataForPath = (path: string, ogImageUrl: string) => {
+  const meta = getMetaForPath(path);
+  const canonicalUrl = getCanonicalUrl(path);
+  const breadcrumbs = getBreadcrumbsForPath(path);
+  const pageId = `${canonicalUrl}#webpage`;
+  const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+  const mainEntity = getMainEntityForPath(path, ogImageUrl);
+  const pageNode: JsonLdObject = {
+    "@type": path === "/" ? "WebPage" : ["WebPage", "LearningResource"],
+    "@id": pageId,
+    url: canonicalUrl,
+    name: meta.title,
+    headline: getReadablePageName(path),
+    description: meta.description,
+    image: ogImageUrl,
+    inLanguage: "pt-BR",
+    isAccessibleForFree: true,
+    isPartOf: { "@id": websiteId },
+    publisher: { "@id": organizationId },
+    breadcrumb: { "@id": breadcrumbId }
+  };
+
+  if (mainEntity) {
+    pageNode.mainEntity = mainEntity;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": organizationId,
+        name: siteName,
+        url: productionSiteUrl,
+        logo: getPublicAssetUrl("/favicon.svg")
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        name: siteName,
+        url: productionSiteUrl,
+        description: pageMeta["/"].description,
+        inLanguage: "pt-BR",
+        publisher: { "@id": organizationId }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": breadcrumbId,
+        itemListElement: breadcrumbs.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: getCanonicalUrl(item.path)
+        }))
+      },
+      pageNode
+    ]
+  };
+};
+
 const updateMeta = (path: string) => {
   const meta = getMetaForPath(path);
-  const canonicalUrl = `${window.location.origin}${routeHref(path)}`;
-  const ogImageUrl = new URL(assetPath(getOgImageForPath(path)), window.location.origin).href;
+  const canonicalUrl = getCanonicalUrl(path);
+  const ogImageUrl = getPublicAssetUrl(getOgImageForPath(path));
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+  document.querySelector('meta[property="og:type"]')?.setAttribute("content", path === "/" ? "website" : "article");
   document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
@@ -1725,20 +1965,7 @@ const updateMeta = (path: string) => {
     structuredData.type = "application/ld+json";
     document.head.append(structuredData);
   }
-  structuredData.textContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "LearningResource",
-    name: meta.title,
-    description: meta.description,
-    url: canonicalUrl,
-    image: ogImageUrl,
-    inLanguage: "pt-BR",
-    isAccessibleForFree: true,
-    provider: {
-      "@type": "Organization",
-      name: "Universo do Café"
-    }
-  });
+  structuredData.textContent = JSON.stringify(getStructuredDataForPath(path, ogImageUrl));
 };
 
 const setupMenu = () => {
@@ -2213,6 +2440,21 @@ const setupReveal = () => {
   items.forEach((item) => observer.observe(item));
 };
 
+const focusElement = (element: HTMLElement) => {
+  const hadTabIndex = element.hasAttribute("tabindex");
+  if (!hadTabIndex) element.setAttribute("tabindex", "-1");
+  element.focus({ preventScroll: true });
+
+  if (!hadTabIndex) {
+    element.addEventListener("blur", () => element.removeAttribute("tabindex"), { once: true });
+  }
+};
+
+const focusHashTarget = (hash: string) => {
+  const target = document.querySelector<HTMLElement>(hash);
+  if (target) focusElement(target);
+};
+
 const setupLinks = () => {
   document.querySelectorAll<HTMLAnchorElement>('a[href^="/"], a[href^="#"]').forEach((link) => {
     const initialHref = link.getAttribute("href");
@@ -2225,6 +2467,7 @@ const setupLinks = () => {
       if (!href || link.target === "_blank") return;
 
       if (href.startsWith("#")) {
+        window.setTimeout(() => focusHashTarget(href), 80);
         return;
       }
 
@@ -2247,7 +2490,9 @@ const scrollAfterRender = () => {
   }
 
   window.setTimeout(() => {
-    document.querySelector(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const target = document.querySelector<HTMLElement>(hash);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (target) focusElement(target);
   }, 40);
 };
 
@@ -2261,7 +2506,7 @@ const renderApp = () => {
 
   app.innerHTML = `
     ${renderHeader(route.path)}
-    <main id="conteudo">
+    <main id="conteudo" tabindex="-1">
       ${route.render()}
     </main>
     ${renderFooter()}
