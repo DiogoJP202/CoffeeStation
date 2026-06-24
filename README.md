@@ -58,3 +58,4 @@ Eventos ja instrumentados:
 - Quiz enviado.
 - Diagnostico de espresso alterado.
 - Comparador de metodos usado.
+- Receita salva/removida no diario de extracoes.

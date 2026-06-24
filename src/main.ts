@@ -49,10 +49,37 @@ const getCurrentPath = () => stripBasePath(window.location.pathname);
 
 const progressStorageKey = "universo-cafe-progress-v1";
 const quizStorageKey = "universo-cafe-quiz-v1";
+const extractionJournalStorageKey = "universo-cafe-extraction-journal-v1";
 let lastTrackedPath = "";
 
 const escapeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const escapeText = escapeAttr;
+
+type QuizAttempt = {
+  score: number;
+  total: number;
+  date: string;
+};
+
+type QuizScore = QuizAttempt & {
+  attempts?: QuizAttempt[];
+};
+
+type ExtractionJournalEntry = {
+  id: string;
+  date: string;
+  methodId: string;
+  methodName: string;
+  dose: number;
+  ratio: number;
+  water: number;
+  target: string;
+  grind: string;
+  brewTime: string;
+  tasting: string;
+  rating: number;
+};
 
 const readProgress = () => {
   try {
@@ -65,6 +92,38 @@ const readProgress = () => {
 const writeProgress = (items: Set<string>) => {
   localStorage.setItem(progressStorageKey, JSON.stringify(Array.from(items)));
 };
+
+const readQuizScores = (): Record<string, QuizScore> => {
+  try {
+    return JSON.parse(localStorage.getItem(quizStorageKey) ?? "{}") as Record<string, QuizScore>;
+  } catch {
+    return {};
+  }
+};
+
+const writeQuizScores = (scores: Record<string, QuizScore>) => {
+  localStorage.setItem(quizStorageKey, JSON.stringify(scores));
+};
+
+const readExtractionJournal = () => {
+  try {
+    return JSON.parse(localStorage.getItem(extractionJournalStorageKey) ?? "[]") as ExtractionJournalEntry[];
+  } catch {
+    return [];
+  }
+};
+
+const writeExtractionJournal = (entries: ExtractionJournalEntry[]) => {
+  localStorage.setItem(extractionJournalStorageKey, JSON.stringify(entries));
+};
+
+const formatStoredDate = (date: string) =>
+  new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(date));
 
 const isLessonComplete = (id: string) => readProgress().has(id);
 
@@ -1106,6 +1165,91 @@ const renderGlossaryDetailPage = (term: GlossaryTerm) => `
   </section>
 `;
 
+const getQuizAttempts = (score?: QuizScore) => {
+  if (!score) return [];
+  return score.attempts?.length ? score.attempts : [{ score: score.score, total: score.total, date: score.date }];
+};
+
+const getBestQuizAttempt = (score?: QuizScore) =>
+  getQuizAttempts(score).reduce<QuizAttempt | undefined>((best, attempt) => {
+    if (!best) return attempt;
+    return attempt.score / attempt.total > best.score / best.total ? attempt : best;
+  }, undefined);
+
+const renderQuizScoreBadge = (quizId: string) => {
+  const score = readQuizScores()[quizId];
+  const lastAttempt = score ? { score: score.score, total: score.total, date: score.date } : undefined;
+  const bestAttempt = getBestQuizAttempt(score);
+  const label = lastAttempt
+    ? `Último ${lastAttempt.score}/${lastAttempt.total}${bestAttempt ? ` · melhor ${bestAttempt.score}/${bestAttempt.total}` : ""}`
+    : "Sem tentativa";
+
+  return `<span class="score-pill ${lastAttempt ? "" : "is-empty"}" data-quiz-score-badge="${quizId}">${label}</span>`;
+};
+
+const renderQuizPerformanceContent = () => {
+  const scores = readQuizScores();
+  const summaries = quizzes.map((quiz) => {
+    const score = scores[quiz.id];
+    const attempts = getQuizAttempts(score);
+    const bestAttempt = getBestQuizAttempt(score);
+    const mastered = bestAttempt ? bestAttempt.score / bestAttempt.total >= 0.67 : false;
+    return { quiz, score, attempts, bestAttempt, mastered };
+  });
+  const attempted = summaries.filter((item) => item.score).length;
+  const mastered = summaries.filter((item) => item.mastered).length;
+  const totalAttempts = summaries.reduce((sum, item) => sum + item.attempts.length, 0);
+  const attemptedSummaries = summaries.filter((item) => item.bestAttempt);
+  const averageBest = attemptedSummaries.length
+    ? Math.round(
+        (attemptedSummaries.reduce((sum, item) => sum + (item.bestAttempt?.score ?? 0) / (item.bestAttempt?.total ?? 1), 0) /
+          attemptedSummaries.length) *
+          100
+      )
+    : 0;
+  const nextQuiz = summaries.find((item) => !item.mastered)?.quiz ?? quizzes[0];
+
+  return `
+    <div>
+      <p class="kicker">Desempenho</p>
+      <h2>Seu mapa de revisão</h2>
+      <p>As tentativas ficam salvas neste navegador e ajudam a decidir o próximo tema para revisar.</p>
+    </div>
+    <div class="quiz-stat-grid">
+      <article><span>${attempted}/${quizzes.length}</span><strong>Quizzes tentados</strong></article>
+      <article><span>${mastered}</span><strong>Temas dominados</strong></article>
+      <article><span>${averageBest}%</span><strong>Melhor média</strong></article>
+      <article><span>${totalAttempts}</span><strong>Tentativas</strong></article>
+    </div>
+    <div class="quiz-score-list">
+      ${summaries
+        .map(
+          ({ quiz, score, attempts, bestAttempt, mastered }) => `
+            <article class="${mastered ? "is-mastered" : ""}">
+              <div>
+                <h3>${quiz.title}</h3>
+                <p>${
+                  score
+                    ? `Último: ${score.score}/${score.total} em ${formatStoredDate(score.date)} · ${attempts.length} tentativa${attempts.length === 1 ? "" : "s"}`
+                    : "Ainda sem tentativa salva."
+                }</p>
+              </div>
+              <strong>${bestAttempt ? `${bestAttempt.score}/${bestAttempt.total}` : "—"}</strong>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+    <a class="button primary" href="#quiz-fundamentos" data-quiz-jump="${nextQuiz.id}">Continuar em ${nextQuiz.title}</a>
+  `;
+};
+
+const renderQuizPerformancePanel = () => `
+  <article class="quiz-performance reveal" data-quiz-performance>
+    ${renderQuizPerformanceContent()}
+  </article>
+`;
+
 const renderQuizPanel = (quiz: Quiz, index: number) => `
   <section class="quiz-panel ${index === 0 ? "is-active" : ""}" data-quiz-panel="${quiz.id}" ${index === 0 ? "" : "hidden"}>
     <div class="quiz-panel-head">
@@ -1113,6 +1257,7 @@ const renderQuizPanel = (quiz: Quiz, index: number) => `
         <p class="kicker">${quiz.category}</p>
         <h2>${quiz.title}</h2>
         <p>${quiz.description}</p>
+        ${renderQuizScoreBadge(quiz.id)}
       </div>
         <a class="text-link dark" href="${quiz.relatedPath}">Revisar conteúdo</a>
     </div>
@@ -1158,6 +1303,7 @@ const renderQuizzesPage = () => `
   ${renderPageProgress("/quizzes")}
   <section class="section section-cream">
     <div class="container">
+      ${renderQuizPerformancePanel()}
       <div class="quiz-shell reveal" id="quiz-fundamentos">
         <div class="filter-bar light-filter quiz-tabs" aria-label="Escolha de quiz">
           ${quizzes
@@ -1185,6 +1331,45 @@ const getMethodRatioValue = (method: BrewMethod) => {
   return match ? Number(match[1]) : 16;
 };
 
+const renderExtractionJournal = () => {
+  const entries = readExtractionJournal();
+
+  if (!entries.length) {
+    return `
+      <div class="journal-empty">
+        <strong>Nenhuma extração salva ainda.</strong>
+        <span>Calcule uma receita, prove a xícara e salve suas notas para comparar evolução.</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="journal-list">
+      ${entries
+        .map(
+          (entry) => `
+            <article class="journal-entry">
+              <div>
+                <p class="kicker">${formatStoredDate(entry.date)} · ${escapeText(entry.methodName)}</p>
+                <h3>${entry.dose} g de café + ${entry.water} g de água</h3>
+                <p>${escapeText(entry.tasting)}</p>
+              </div>
+              <dl class="card-dl">
+                <div><dt>Proporção</dt><dd>1:${entry.ratio}</dd></div>
+                <div><dt>Moagem usada</dt><dd>${escapeText(entry.grind)}</dd></div>
+                <div><dt>Tempo real</dt><dd>${escapeText(entry.brewTime)}</dd></div>
+                <div><dt>Avaliação</dt><dd>${entry.rating}/5</dd></div>
+                <div><dt>Referência</dt><dd>${escapeText(entry.target)}</dd></div>
+              </dl>
+              <button class="text-button" type="button" data-journal-delete="${entry.id}">Excluir registro</button>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+};
+
 const renderSimulatorsPage = () => `
   ${renderPageHero(
     "Simuladores",
@@ -1192,6 +1377,7 @@ const renderSimulatorsPage = () => `
     "Calcule receitas, diagnostique espresso e compare métodos antes de mexer em moagem, dose e tempo.",
     [
       { label: "Calcular receita", href: "#receita", variant: "primary" },
+      { label: "Abrir diário", href: "#diario", variant: "ghost" },
       { label: "Fazer quizzes", href: "/quizzes", variant: "secondary" }
     ]
   )}
@@ -1212,6 +1398,28 @@ const renderSimulatorsPage = () => `
             </label>
           </div>
           <div class="tool-result" data-recipe-output aria-live="polite"></div>
+          <div class="journal-form" aria-label="Salvar receita no diário">
+            <div class="form-grid">
+              <label>Moagem usada<input type="text" placeholder="Ex.: média-fina" data-journal-grind /></label>
+              <label>Tempo real<input type="text" placeholder="Ex.: 3:05" data-journal-time /></label>
+              <label>Avaliação
+                <select data-journal-rating>
+                  <option value="5">5 - Excelente</option>
+                  <option value="4">4 - Boa</option>
+                  <option value="3" selected>3 - Ajustável</option>
+                  <option value="2">2 - Fraca</option>
+                  <option value="1">1 - Refazer</option>
+                </select>
+              </label>
+            </div>
+            <label class="full-label">Notas da xícara
+              <textarea rows="4" placeholder="Doçura, acidez, corpo, final e próximo ajuste..." data-journal-notes></textarea>
+            </label>
+            <div class="journal-actions">
+              <button class="button primary" type="button" data-save-recipe>Salvar no diário</button>
+              <p class="quiz-result" data-journal-status aria-live="polite"></p>
+            </div>
+          </div>
         </article>
 
         <article class="tool-panel reveal" id="espresso-diagnostico">
@@ -1241,6 +1449,18 @@ const renderSimulatorsPage = () => `
             </label>
           </div>
           <div class="compare-output" data-compare-output aria-live="polite"></div>
+        </article>
+
+        <article class="tool-panel wide reveal" id="diario">
+          <div class="tool-panel-head">
+            <div>
+              <p class="kicker">Diário</p>
+              <h2>Diário de extrações</h2>
+              <p>Compare receitas salvas, notas sensoriais e ajustes para evoluir com menos tentativa no escuro.</p>
+            </div>
+            <a class="text-link dark" href="/metodos">Revisar métodos</a>
+          </div>
+          <div data-journal-list>${renderExtractionJournal()}</div>
         </article>
       </div>
     </div>
@@ -1569,17 +1789,37 @@ const setupProgressToggles = () => {
 const setupQuizzes = () => {
   const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-quiz-tab]"));
   const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-quiz-panel]"));
+  const performancePanel = document.querySelector<HTMLElement>("[data-quiz-performance]");
+
+  const activateQuiz = (quizId?: string) => {
+    if (!quizId) return;
+    tabs.forEach((item) => item.classList.toggle("is-active", item.dataset.quizTab === quizId));
+    panels.forEach((panel) => {
+      const isActive = panel.dataset.quizPanel === quizId;
+      panel.hidden = !isActive;
+      panel.classList.toggle("is-active", isActive);
+    });
+  };
+
+  const refreshQuizStatus = () => {
+    if (performancePanel) performancePanel.innerHTML = renderQuizPerformanceContent();
+    document.querySelectorAll<HTMLElement>("[data-quiz-score-badge]").forEach((badge) => {
+      const quizId = badge.dataset.quizScoreBadge;
+      if (!quizId) return;
+      badge.outerHTML = renderQuizScoreBadge(quizId);
+    });
+  };
 
   tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const quizId = tab.dataset.quizTab;
-      tabs.forEach((item) => item.classList.toggle("is-active", item === tab));
-      panels.forEach((panel) => {
-        const isActive = panel.dataset.quizPanel === quizId;
-        panel.hidden = !isActive;
-        panel.classList.toggle("is-active", isActive);
-      });
-    });
+    tab.addEventListener("click", () => activateQuiz(tab.dataset.quizTab));
+  });
+
+  performancePanel?.addEventListener("click", (event) => {
+    const target = (event.target as Element).closest<HTMLElement>("[data-quiz-jump]");
+    if (!target) return;
+    event.preventDefault();
+    activateQuiz(target.dataset.quizJump);
+    document.querySelector("#quiz-fundamentos")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   document.querySelectorAll<HTMLFormElement>("[data-quiz-form]").forEach((form) => {
@@ -1607,9 +1847,12 @@ const setupQuizzes = () => {
       const quizId = form.dataset.quizForm;
       if (!quizId) return;
 
-      const scores = JSON.parse(localStorage.getItem(quizStorageKey) ?? "{}") as Record<string, { score: number; total: number; date: string }>;
-      scores[quizId] = { score, total: questions.length, date: new Date().toISOString() };
-      localStorage.setItem(quizStorageKey, JSON.stringify(scores));
+      const scores = readQuizScores();
+      const date = new Date().toISOString();
+      const attempts = [...getQuizAttempts(scores[quizId]), { score, total: questions.length, date }].slice(-10);
+      scores[quizId] = { score, total: questions.length, date, attempts };
+      writeQuizScores(scores);
+      refreshQuizStatus();
       trackEvent("coffee_quiz_submit", {
         quiz_id: quizId,
         score,
@@ -1632,6 +1875,13 @@ const setupSimulators = () => {
   const ratioInput = document.querySelector<HTMLInputElement>("[data-recipe-ratio]");
   const methodSelect = document.querySelector<HTMLSelectElement>("[data-recipe-method]");
   const recipeOutput = document.querySelector<HTMLElement>("[data-recipe-output]");
+  const journalGrindInput = document.querySelector<HTMLInputElement>("[data-journal-grind]");
+  const journalTimeInput = document.querySelector<HTMLInputElement>("[data-journal-time]");
+  const journalNotesInput = document.querySelector<HTMLTextAreaElement>("[data-journal-notes]");
+  const journalRatingSelect = document.querySelector<HTMLSelectElement>("[data-journal-rating]");
+  const saveRecipeButton = document.querySelector<HTMLButtonElement>("[data-save-recipe]");
+  const journalStatus = document.querySelector<HTMLElement>("[data-journal-status]");
+  const journalList = document.querySelector<HTMLElement>("[data-journal-list]");
 
   const updateRecipe = () => {
     if (!doseInput || !ratioInput || !methodSelect || !recipeOutput) return;
@@ -1643,6 +1893,10 @@ const setupSimulators = () => {
       <strong>${dose} g de café + ${water} g de água</strong>
       <span>${method.name}: ${method.grind}, ${method.time}, ${method.temperature}. Comece provando e ajuste uma variável por vez.</span>
     `;
+  };
+
+  const refreshJournal = () => {
+    if (journalList) journalList.innerHTML = renderExtractionJournal();
   };
 
   methodSelect?.addEventListener("change", () => {
@@ -1658,6 +1912,56 @@ const setupSimulators = () => {
   doseInput?.addEventListener("input", updateRecipe);
   ratioInput?.addEventListener("input", updateRecipe);
   updateRecipe();
+
+  saveRecipeButton?.addEventListener("click", () => {
+    if (!doseInput || !ratioInput || !methodSelect) return;
+
+    const dose = Number(doseInput.value) || 0;
+    const ratio = Number(ratioInput.value) || 0;
+    const method = brewMethods.find((item) => item.id === methodSelect.value) ?? brewMethods[0];
+    const water = Math.round(dose * ratio);
+    const entry: ExtractionJournalEntry = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      methodId: method.id,
+      methodName: method.name,
+      dose,
+      ratio,
+      water,
+      target: `${method.grind}, ${method.time}, ${method.temperature}`,
+      grind: journalGrindInput?.value.trim() || method.grind,
+      brewTime: journalTimeInput?.value.trim() || method.time,
+      tasting: journalNotesInput?.value.trim() || "Sem nota sensorial registrada.",
+      rating: Number(journalRatingSelect?.value) || 3
+    };
+
+    writeExtractionJournal([entry, ...readExtractionJournal()].slice(0, 12));
+    refreshJournal();
+    if (journalStatus) journalStatus.textContent = "Registro salvo no diário.";
+    if (journalNotesInput) journalNotesInput.value = "";
+
+    const completed = readProgress();
+    completed.add("simuladores");
+    writeProgress(completed);
+    trackEvent("coffee_journal_save", {
+      method: entry.methodId,
+      rating: entry.rating,
+      path: getCurrentPath()
+    });
+  });
+
+  journalList?.addEventListener("click", (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>("[data-journal-delete]");
+    const entryId = button?.dataset.journalDelete;
+    if (!entryId) return;
+
+    writeExtractionJournal(readExtractionJournal().filter((entry) => entry.id !== entryId));
+    refreshJournal();
+    trackEvent("coffee_journal_delete", {
+      entry_id: entryId,
+      path: getCurrentPath()
+    });
+  });
 
   const diagnosticSelect = document.querySelector<HTMLSelectElement>("[data-espresso-diagnostic]");
   const diagnosticOutput = document.querySelector<HTMLElement>("[data-espresso-output]");

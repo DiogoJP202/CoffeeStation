@@ -60,7 +60,9 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -1475,6 +1477,7 @@ th {
 .lesson-progress-card,
 .progress-item,
 .quiz-shell,
+.quiz-performance,
 .quiz-panel,
 .tool-panel,
 .glossary-detail,
@@ -1624,7 +1627,8 @@ th {
 .select-filters select,
 .form-grid input,
 .form-grid select,
-.full-label select {
+.full-label select,
+.full-label textarea {
   width: 100%;
   min-height: 48px;
   border: 1px solid rgba(36, 22, 15, 0.16);
@@ -1632,6 +1636,11 @@ th {
   background: var(--foam);
   color: var(--ink);
   padding: 10px 12px;
+}
+
+.full-label textarea {
+  min-height: 106px;
+  resize: vertical;
 }
 
 .select-filters,
@@ -1663,6 +1672,90 @@ th {
 
 .quiz-shell {
   padding: 18px;
+}
+
+.quiz-performance {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 24px;
+  color: var(--ink);
+}
+
+.quiz-stat-grid,
+.quiz-score-list {
+  display: grid;
+  gap: 10px;
+}
+
+.quiz-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.quiz-stat-grid article,
+.quiz-score-list article {
+  border: 1px solid rgba(36, 22, 15, 0.1);
+  border-radius: 8px;
+  background: #f6ead7;
+  padding: 14px;
+}
+
+.quiz-stat-grid span {
+  display: block;
+  color: var(--olive);
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.quiz-stat-grid strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.quiz-score-list article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.quiz-score-list article.is-mastered {
+  border-color: rgba(111, 125, 60, 0.34);
+  background: #eef0df;
+}
+
+.quiz-score-list h3 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.15;
+}
+
+.quiz-score-list strong {
+  flex: 0 0 auto;
+  color: var(--olive);
+  font-size: 1.2rem;
+}
+
+.score-pill {
+  width: fit-content;
+  display: inline-flex;
+  margin-top: 12px;
+  border: 1px solid rgba(111, 125, 60, 0.28);
+  border-radius: 8px;
+  background: #eef0df;
+  color: var(--olive-deep);
+  padding: 6px 9px;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.score-pill.is-empty {
+  border-color: rgba(36, 22, 15, 0.12);
+  background: #f6ead7;
+  color: var(--muted-light);
 }
 
 .quiz-panel {
@@ -1745,6 +1838,14 @@ th {
   grid-column: 1 / -1;
 }
 
+.tool-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
 .form-grid.two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1766,6 +1867,71 @@ th {
 
 .tool-result span {
   color: var(--muted-light);
+}
+
+.journal-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+  border-top: 1px solid rgba(36, 22, 15, 0.1);
+  padding-top: 18px;
+}
+
+.journal-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.journal-empty {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(36, 22, 15, 0.1);
+  border-radius: 8px;
+  background: #f6ead7;
+  padding: 18px;
+}
+
+.journal-empty span {
+  color: var(--muted-light);
+}
+
+.journal-list {
+  display: grid;
+  gap: 12px;
+}
+
+.journal-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr) auto;
+  gap: 14px;
+  align-items: start;
+  border: 1px solid rgba(36, 22, 15, 0.1);
+  border-radius: 8px;
+  background: #f6ead7;
+  padding: 16px;
+}
+
+.journal-entry h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.journal-entry .card-dl {
+  margin: 0;
+}
+
+.text-button {
+  min-height: 40px;
+  border: 1px solid rgba(181, 106, 58, 0.3);
+  border-radius: 8px;
+  background: rgba(181, 106, 58, 0.1);
+  color: var(--ink);
+  padding: 8px 10px;
+  font-weight: 950;
 }
 
 .compare-output {
@@ -1953,8 +2119,13 @@ th {
 
   .method-facts,
   .method-recipe-grid,
+  .quiz-stat-grid,
   .recipe-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .journal-entry {
+    grid-template-columns: 1fr;
   }
 
   .progress-dashboard,
@@ -2026,6 +2197,7 @@ th {
   .inline-facts,
   .method-facts,
   .method-recipe-grid,
+  .quiz-stat-grid,
   .recipe-grid,
   .select-filters,
   .form-grid,
@@ -2070,6 +2242,7 @@ th {
 
   .next-lesson,
   .footer-inner,
+  .tool-panel-head,
   .progress-item,
   .lesson-progress-card,
   .quiz-panel-head {
