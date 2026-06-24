@@ -43,6 +43,8 @@ jobs:
         run: pnpm run build
         env:
           GITHUB_PAGES: "true"
+          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
+          VITE_PLAUSIBLE_DOMAIN: ${{ vars.VITE_PLAUSIBLE_DOMAIN }}
 
       - name: Create static route pages
         run: pnpm run build:routes

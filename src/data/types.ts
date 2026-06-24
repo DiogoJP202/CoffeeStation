@@ -68,6 +68,15 @@ export type Professional = {
   start: string;
 };
 
+export type BrewRecipe = {
+  dose: string;
+  water: string;
+  ratio: string;
+  time: string;
+  grind: string;
+  temperature: string;
+};
+
 export type BrewMethod = {
   id: string;
   name: string;
@@ -86,6 +95,10 @@ export type BrewMethod = {
   steps: string[];
   commonErrors: string[];
   adjustments: string[];
+  recipe: BrewRecipe;
+  tastingGuide: string[];
+  variations: string[];
+  practicePlan: string[];
   videoId?: string;
   media: MediaVisual;
 };

@@ -1,4 +1,5 @@
 import "./styles.css";
+import { initAnalytics, trackEvent, trackPageView } from "./analytics";
 import { brewMethods } from "./data/brewingMethods";
 import { coffeeBasics, marketTypes, sensoryCards } from "./data/coffeeBasics";
 import { coreLessons, espressoDiagnostics, lessonContents, quizzes, slugify } from "./data/courseContent";
@@ -48,6 +49,7 @@ const getCurrentPath = () => stripBasePath(window.location.pathname);
 
 const progressStorageKey = "universo-cafe-progress-v1";
 const quizStorageKey = "universo-cafe-quiz-v1";
+let lastTrackedPath = "";
 
 const escapeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -627,7 +629,7 @@ const renderBarismoPage = () => `
   </section>
 `;
 
-const renderMethodSection = (method: BrewMethod) => `
+const renderMethodSection = (method: BrewMethod, isCompact = false) => `
   <article class="method-detail reveal" id="${method.id}">
     ${renderMedia(method.media)}
     <div class="method-copy">
@@ -640,12 +642,46 @@ const renderMethodSection = (method: BrewMethod) => `
         <div><span>Tempo</span><strong>${method.time}</strong></div>
         <div><span>Temperatura</span><strong>${method.temperature}</strong></div>
       </div>
+      ${
+        isCompact
+          ? ""
+          : `<section class="method-recipe-card">
+              <p class="kicker">Receita base</p>
+              <h3>Ponto de partida recomendado</h3>
+              <div class="method-recipe-grid">
+                <div><span>Dose</span><strong>${method.recipe.dose}</strong></div>
+                <div><span>Água/rendimento</span><strong>${method.recipe.water}</strong></div>
+                <div><span>Proporção</span><strong>${method.recipe.ratio}</strong></div>
+                <div><span>Tempo alvo</span><strong>${method.recipe.time}</strong></div>
+                <div><span>Moagem</span><strong>${method.recipe.grind}</strong></div>
+                <div><span>Temperatura</span><strong>${method.recipe.temperature}</strong></div>
+              </div>
+            </section>`
+      }
       <div class="method-columns">
         <section><h3>Equipamento</h3>${list(method.equipment, "chip-list")}</section>
         <section><h3>Passo a passo</h3>${list(method.steps, "number-list")}</section>
         <section><h3>Erros comuns</h3>${list(method.commonErrors)}</section>
         <section><h3>Como ajustar</h3>${list(method.adjustments)}</section>
       </div>
+      ${
+        isCompact
+          ? ""
+          : `<div class="method-deep-dive">
+              <section class="method-depth-block">
+                <h3>Como ler a xícara</h3>
+                ${list(method.tastingGuide)}
+              </section>
+              <section class="method-depth-block">
+                <h3>Variações úteis</h3>
+                ${list(method.variations)}
+              </section>
+              <section class="method-depth-block">
+                <h3>Plano de treino</h3>
+                ${list(method.practicePlan, "number-list")}
+              </section>
+            </div>`
+      }
       <dl class="inline-facts method-facts">
         <div><dt>Perfil</dt><dd>${method.sensory}</dd></div>
         <div><dt>Corpo</dt><dd>${method.body}</dd></div>
@@ -653,7 +689,7 @@ const renderMethodSection = (method: BrewMethod) => `
         <div><dt>Melhor para</dt><dd>${method.bestFor}</dd></div>
         <div><dt>Copo sugerido</dt><dd>${method.vessel}</dd></div>
       </dl>
-      <a class="text-link dark" href="/metodos/${method.id}">Abrir página completa</a>
+      ${isCompact ? `<a class="text-link dark" href="/metodos/${method.id}">Abrir página completa</a>` : ""}
       ${method.videoId ? renderVideoCard(videos.find((video) => video.id === method.videoId) ?? videos[0]) : ""}
     </div>
   </article>
@@ -675,7 +711,7 @@ const renderMethodsPage = () => `
       <div class="comparison-table reveal" id="comparativo" role="region" aria-label="Comparativo de métodos" tabindex="0">
         <table>
           <thead>
-            <tr><th>Método</th><th>Moagem</th><th>Tempo</th><th>Corpo</th><th>Acidez</th><th>Dificuldade</th><th>Melhor para</th></tr>
+            <tr><th>Método</th><th>Receita base</th><th>Moagem</th><th>Tempo</th><th>Corpo</th><th>Acidez</th><th>Dificuldade</th><th>Melhor para</th></tr>
           </thead>
           <tbody>
             ${brewMethods
@@ -683,6 +719,7 @@ const renderMethodsPage = () => `
                 (method) => `
                   <tr>
                     <th><a href="/metodos/${method.id}">${method.name}</a></th>
+                    <td>${method.recipe.dose} / ${method.recipe.water}</td>
                     <td>${method.grind}</td>
                     <td>${method.time}</td>
                     <td>${method.body}</td>
@@ -697,7 +734,7 @@ const renderMethodsPage = () => `
         </table>
       </div>
       <div class="method-list">
-        ${brewMethods.map(renderMethodSection).join("")}
+        ${brewMethods.map((method) => renderMethodSection(method, true)).join("")}
       </div>
       ${renderNextCta("Próximo conteúdo", "Estude leite e latte art", "Depois dos métodos, explore espresso, microespuma, bebidas com leite e padrões de desenho.", "/latte-art")}
     </div>
@@ -1402,6 +1439,11 @@ const setupVideoEmbeds = () => {
       const videoId = button.dataset.videoId;
       const shell = button.closest<HTMLElement>("[data-video-shell]");
       if (!videoId || !shell) return;
+      trackEvent("coffee_video_load", {
+        video_id: videoId,
+        title: button.getAttribute("aria-label")?.replace("Carregar vídeo: ", ""),
+        path: getCurrentPath()
+      });
 
       shell.innerHTML = `
         <iframe
@@ -1503,6 +1545,12 @@ const setupProgressToggles = () => {
         completed.add(lessonId);
       }
       writeProgress(completed);
+      const isComplete = completed.has(lessonId);
+      trackEvent("coffee_progress_toggle", {
+        lesson_id: lessonId,
+        status: isComplete ? "complete" : "open",
+        path: getCurrentPath()
+      });
 
       if (getCurrentPath() === "/") {
         renderApp();
@@ -1510,7 +1558,6 @@ const setupProgressToggles = () => {
       }
 
       document.querySelectorAll<HTMLButtonElement>(`[data-progress-toggle="${lessonId}"]`).forEach((item) => {
-        const isComplete = completed.has(lessonId);
         item.classList.toggle("is-complete", isComplete);
         item.setAttribute("aria-pressed", String(isComplete));
         item.innerHTML = `<span aria-hidden="true">${isComplete ? "✓" : "+"}</span>${isComplete ? "Concluído" : "Marcar como concluído"}`;
@@ -1563,6 +1610,12 @@ const setupQuizzes = () => {
       const scores = JSON.parse(localStorage.getItem(quizStorageKey) ?? "{}") as Record<string, { score: number; total: number; date: string }>;
       scores[quizId] = { score, total: questions.length, date: new Date().toISOString() };
       localStorage.setItem(quizStorageKey, JSON.stringify(scores));
+      trackEvent("coffee_quiz_submit", {
+        quiz_id: quizId,
+        score,
+        total: questions.length,
+        path: getCurrentPath()
+      });
 
       if (score / questions.length >= 0.67) {
         const completed = readProgress();
@@ -1596,6 +1649,11 @@ const setupSimulators = () => {
     const selected = methodSelect.selectedOptions[0];
     if (ratioInput && selected?.dataset.ratio) ratioInput.value = selected.dataset.ratio;
     updateRecipe();
+    trackEvent("coffee_recipe_method_change", {
+      method: methodSelect.value,
+      ratio: ratioInput?.value,
+      path: getCurrentPath()
+    });
   });
   doseInput?.addEventListener("input", updateRecipe);
   ratioInput?.addEventListener("input", updateRecipe);
@@ -1613,7 +1671,13 @@ const setupSimulators = () => {
     `;
   };
 
-  diagnosticSelect?.addEventListener("change", updateDiagnostic);
+  diagnosticSelect?.addEventListener("change", () => {
+    updateDiagnostic();
+    trackEvent("coffee_espresso_diagnostic", {
+      symptom: diagnosticSelect.value,
+      path: getCurrentPath()
+    });
+  });
   updateDiagnostic();
 
   const compareA = document.querySelector<HTMLSelectElement>("[data-compare-a]");
@@ -1646,8 +1710,23 @@ const setupSimulators = () => {
     `;
   };
 
-  compareA?.addEventListener("change", updateCompare);
-  compareB?.addEventListener("change", updateCompare);
+  const trackCompare = () => {
+    if (!compareA || !compareB) return;
+    trackEvent("coffee_method_compare", {
+      method_a: compareA.value,
+      method_b: compareB.value,
+      path: getCurrentPath()
+    });
+  };
+
+  compareA?.addEventListener("change", () => {
+    updateCompare();
+    trackCompare();
+  });
+  compareB?.addEventListener("change", () => {
+    updateCompare();
+    trackCompare();
+  });
   updateCompare();
 };
 
@@ -1715,6 +1794,10 @@ const scrollAfterRender = () => {
 const renderApp = () => {
   const route = resolveRoute(getCurrentPath());
   updateMeta(route.path);
+  if (route.path !== lastTrackedPath) {
+    lastTrackedPath = route.path;
+    trackPageView(route.path, getMetaForPath(route.path).title);
+  }
 
   app.innerHTML = `
     ${renderHeader(route.path)}
@@ -1739,5 +1822,6 @@ const renderApp = () => {
   scrollAfterRender();
 };
 
+initAnalytics();
 window.addEventListener("popstate", renderApp);
 renderApp();

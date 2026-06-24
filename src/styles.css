@@ -1098,7 +1098,7 @@ summary {
 
 table {
   width: 100%;
-  min-width: 860px;
+  min-width: 980px;
   border-collapse: collapse;
 }
 
@@ -1157,6 +1157,52 @@ th {
 .recipe-grid strong {
   display: block;
   margin-top: 4px;
+}
+
+.method-recipe-card,
+.method-depth-block {
+  margin-top: 22px;
+  border-top: 1px solid rgba(36, 22, 15, 0.12);
+  padding-top: 18px;
+}
+
+.method-recipe-card h3,
+.method-depth-block h3 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.method-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.method-recipe-grid div {
+  border: 1px solid rgba(36, 22, 15, 0.1);
+  border-radius: 8px;
+  background: #f5e8d1;
+  padding: 14px;
+}
+
+.method-recipe-grid span {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 950;
+  opacity: 0.68;
+  text-transform: uppercase;
+}
+
+.method-recipe-grid strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.method-deep-dive {
+  display: grid;
+  gap: 2px;
 }
 
 .method-columns {
@@ -1906,6 +1952,7 @@ th {
   }
 
   .method-facts,
+  .method-recipe-grid,
   .recipe-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1978,6 +2025,7 @@ th {
   .glossary-grid,
   .inline-facts,
   .method-facts,
+  .method-recipe-grid,
   .recipe-grid,
   .select-filters,
   .form-grid,
