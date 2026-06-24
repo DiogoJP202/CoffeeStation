@@ -1038,6 +1038,86 @@ summary {
   padding: 28px;
 }
 
+.career-roadmap,
+.workflow-panel,
+.origin-study-panel {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(198, 138, 74, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 248, 236, 0.08);
+  padding: 28px;
+}
+
+.career-roadmap,
+.origin-study-panel {
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+}
+
+.roadmap-grid,
+.workflow-steps,
+.origin-study-grid,
+.practice-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.roadmap-grid,
+.origin-study-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.workflow-panel {
+  grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1.22fr);
+  margin: 28px 0;
+}
+
+.workflow-steps,
+.practice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.roadmap-grid article,
+.workflow-steps article,
+.origin-study-grid article,
+.practice-card {
+  border: 1px solid rgba(255, 248, 236, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 248, 236, 0.07);
+  padding: 18px;
+}
+
+.origin-study-grid article {
+  background: rgba(18, 12, 8, 0.3);
+}
+
+.roadmap-grid span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(198, 138, 74, 0.38);
+  border-radius: 8px;
+  color: var(--caramel);
+  font-family: var(--font-display);
+  font-weight: 900;
+}
+
+.roadmap-grid h3,
+.workflow-steps h3,
+.origin-study-grid h3,
+.practice-card h3 {
+  margin: 14px 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.workflow-panel .button {
+  margin-top: 18px;
+}
+
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2100,11 +2180,14 @@ th {
   }
 
   .editorial-block,
+  .career-roadmap,
   .rich-step,
   .diagnostic-panel,
   .method-detail,
   .latte-panel,
   .map-layout,
+  .origin-study-panel,
+  .workflow-panel,
   .sensory-panel {
     grid-template-columns: 1fr;
   }
@@ -2120,9 +2203,12 @@ th {
 
   .mini-grid,
   .comparison-grid,
+  .practice-grid,
   .video-grid,
   .photo-grid,
   .milk-grid,
+  .origin-study-grid,
+  .roadmap-grid,
   .pattern-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2192,10 +2278,14 @@ th {
   .profession-grid.expanded,
   .principles-grid,
   .equipment-grid,
+  .practice-grid,
   .diagnostic-grid,
   .method-columns,
   .mini-grid,
   .comparison-grid,
+  .origin-study-grid,
+  .roadmap-grid,
+  .workflow-steps,
   .video-grid,
   .library-grid,
   .photo-grid,
@@ -2246,6 +2336,9 @@ th {
   .region-card,
   .glossary-shell,
   .next-lesson,
+  .career-roadmap,
+  .origin-study-panel,
+  .workflow-panel,
   .career-panel {
     padding: 18px;
   }

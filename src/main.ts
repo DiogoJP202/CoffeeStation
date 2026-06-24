@@ -577,14 +577,40 @@ const renderProfessionalsPage = () => `
   ${renderPageProgress("/profissionais")}
   <section class="section section-dark">
     <div class="container">
+      ${renderInternalNav([
+        { label: "Mapa de carreira", href: "#mapa-carreira" },
+        { label: "Áreas", href: "#areas" },
+        { label: "Primeiros passos", href: "#primeiros-passos" }
+      ])}
+      <section class="career-roadmap reveal" id="mapa-carreira">
+        <div>
+          <p class="kicker">Desenvolvimento</p>
+          <h2>Um caminho realista para entrar no café</h2>
+          <p>Não existe uma única porta de entrada. O ponto comum é construir repertório, prática mensurável e linguagem clara sobre qualidade.</p>
+        </div>
+        <div class="roadmap-grid">
+          ${careerRoadmap
+            .map(
+              (item, index) => `
+                <article>
+                  <span>${String(index + 1).padStart(2, "0")}</span>
+                  <h3>${item.title}</h3>
+                  <p>${item.text}</p>
+                  <a class="text-link" href="${item.path}">Estudar</a>
+                </article>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
       <div class="filter-bar" aria-label="Filtros de profissionais">
         <button type="button" class="is-active" data-prof-filter="todos">Todos</button>
         ${Object.entries(stageLabels).map(([key, label]) => `<button type="button" data-prof-filter="${key}">${label}</button>`).join("")}
       </div>
-      <div class="profession-grid expanded">
+      <div class="profession-grid expanded" id="areas">
         ${professionals.map(renderProfessionCard).join("")}
       </div>
-      <section class="career-panel reveal">
+      <section class="career-panel reveal" id="primeiros-passos">
         <p class="kicker">Carreira</p>
         <h2>Como seguir carreira no café</h2>
         <p>Comece provando cafés diferentes, aprenda fundamentos de extração, pratique comunicação sensorial e acompanhe profissionais reais. Depois escolha uma área: campo, qualidade, torra, cafeteria ou negócios.</p>
@@ -628,6 +654,75 @@ const equipmentCards = [
   ["Termômetro", "Controle de temperatura.", "Opcional", "Ajuda no treino de leite e água."]
 ];
 
+const baristaWorkflow = [
+  {
+    title: "1. Defina uma hipótese",
+    text: "Antes de mexer no moedor, descreva o problema: acidez agressiva, final seco, corpo baixo, doçura apagada ou inconsistência."
+  },
+  {
+    title: "2. Mude uma variável",
+    text: "Altere só moagem, proporção, temperatura, tempo ou agitação. Se mudar tudo junto, a xícara não ensina qual ajuste funcionou."
+  },
+  {
+    title: "3. Prove com intenção",
+    text: "Espere a bebida esfriar um pouco e avalie aroma, doçura, acidez, corpo, amargor e final. A primeira impressão nem sempre é a mais útil."
+  },
+  {
+    title: "4. Registre o próximo passo",
+    text: "Anote receita, tempo e leitura sensorial no diário de extrações. O objetivo é criar memória prática, não decorar regra fixa."
+  }
+];
+
+const baristaTrainingDrills = [
+  ["Moagem", "Prepare duas receitas iguais mudando apenas a moagem.", "Perceber subextração, superextração e impacto no tempo."],
+  ["Proporção", "Compare 1:15, 1:16 e 1:17 com o mesmo café.", "Entender concentração, intensidade e equilíbrio."],
+  ["Água", "Use a mesma receita com duas águas diferentes quando possível.", "Reconhecer como a água muda clareza, corpo e amargor."],
+  ["Despejo", "Repita um coado com despejo único e outro em pulsos.", "Sentir turbulência, controle de fluxo e uniformidade."],
+  ["Espresso", "Fixe dose e rendimento, alterando só a moagem.", "Construir noção de resistência, tempo e canalização."],
+  ["Sensorial", "Prove a mesma xícara quente, morna e fria.", "Treinar leitura de acidez, doçura e final ao longo da temperatura."]
+];
+
+const originStudyCards = [
+  {
+    title: "Comece pelo processo",
+    text: "Compare natural, lavado e honey antes de concluir que todo sabor vem da origem. Processo muda doçura, corpo, acidez e limpeza.",
+    path: "/do-campo-a-xicara#natural"
+  },
+  {
+    title: "Compare cafés lado a lado",
+    text: "Use a mesma receita, moagem parecida e xícaras iguais. Diferenças ficam mais claras quando a variável principal é a origem.",
+    path: "/metodos/v60"
+  },
+  {
+    title: "Leia região com cuidado",
+    text: "Perfil regional é ponto de partida, não promessa. Fazenda, variedade, safra, processo, torra e preparo continuam mandando muito.",
+    path: "/fundamentos#terroir"
+  }
+];
+
+const careerRoadmap = [
+  {
+    title: "Base sensorial",
+    text: "Prove cafés diferentes, anote vocabulário e entenda acidez, corpo, doçura, finalização e defeitos.",
+    path: "/fundamentos#sensorial"
+  },
+  {
+    title: "Prática controlada",
+    text: "Use balança, receita, cronômetro e diário de extrações para aprender causa e efeito no preparo.",
+    path: "/simuladores#diario"
+  },
+  {
+    title: "Repertório de cadeia",
+    text: "Estude campo, processo, classificação, torra e serviço para conversar com mais precisão sobre qualidade.",
+    path: "/do-campo-a-xicara"
+  },
+  {
+    title: "Portfólio simples",
+    text: "Documente receitas, cuppings, treinos, fotos de serviço e aprendizados. Isso ajuda em vagas, consultorias e projetos.",
+    path: "/biblioteca"
+  }
+];
+
 const renderBarismoPage = () => `
   ${renderPageHero(
     "Barismo",
@@ -639,12 +734,39 @@ const renderBarismoPage = () => `
     <div class="container">
       ${renderInternalNav([
         { label: "Fundamentos", href: "#fundamentos" },
+        { label: "Rotina", href: "#rotina" },
+        { label: "Treinos", href: "#treinos" },
         { label: "Diagnóstico", href: "#diagnostico" },
         { label: "Equipamentos", href: "#equipamentos" }
       ])}
       ${sectionHeading("Painel", "Fundamentos da extração", "Use estes cartões como painel rápido para revisar uma receita.")}
       <div class="principles-grid" id="fundamentos">
         ${barismoPrinciples.map(([title, text]) => `<article class="principle-card reveal"><h3>${title}</h3><p>${text}</p></article>`).join("")}
+      </div>
+      <section class="workflow-panel reveal" id="rotina">
+        <div>
+          <p class="kicker">Rotina de ajuste</p>
+          <h2>Como pensar antes de mexer na receita</h2>
+          <p>Barismo melhora quando cada preparo vira uma pergunta clara. Use esta rotina para transformar erro em leitura.</p>
+          <a class="button primary" href="/simuladores#diario">Abrir diário de extrações</a>
+        </div>
+        <div class="workflow-steps">
+          ${baristaWorkflow.map((step) => `<article><h3>${step.title}</h3><p>${step.text}</p></article>`).join("")}
+        </div>
+      </section>
+      ${sectionHeading("Treino guiado", "Exercícios para criar consistência", "Escolha um exercício por vez e repita com calma. Consistência nasce de comparação honesta, não de receita perfeita.")}
+      <div class="practice-grid" id="treinos">
+        ${baristaTrainingDrills
+          .map(
+            ([title, drill, goal]) => `
+              <article class="practice-card reveal">
+                <p class="kicker">${title}</p>
+                <h3>${drill}</h3>
+                <p>${goal}</p>
+              </article>
+            `
+          )
+          .join("")}
       </div>
       <section class="diagnostic-panel reveal" id="diagnostico">
         <div>
@@ -878,9 +1000,30 @@ const renderOriginsPage = () => `
   <section class="section section-dark">
     <div class="container">
       ${renderInternalNav([
+        { label: "Como estudar", href: "#como-estudar-origem" },
         { label: "Mapa mundial", href: "#mapa-mundial" },
         { label: "Brasil", href: "#brasil" }
       ])}
+      <section class="origin-study-panel reveal" id="como-estudar-origem">
+        <div>
+          <p class="kicker">Método de estudo</p>
+          <h2>Origem é contexto, não atalho</h2>
+          <p>Use origem para formular hipóteses e perguntas. Depois prove, compare processo, confira torra e ajuste preparo.</p>
+        </div>
+        <div class="origin-study-grid">
+          ${originStudyCards
+            .map(
+              (item) => `
+                <article>
+                  <h3>${item.title}</h3>
+                  <p>${item.text}</p>
+                  <a class="text-link" href="${item.path}">Aprofundar</a>
+                </article>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
       <div class="map-layout reveal" id="mapa-mundial">
         <div class="coffee-map" aria-label="Mapa estilizado de origens produtoras">
           <svg viewBox="0 0 100 70" role="img" aria-label="Cinturão do café com pontos de países produtores">
