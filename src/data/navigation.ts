@@ -10,7 +10,9 @@ export const mainNav: NavItem[] = [
   { label: "Latte Art", path: "/latte-art" },
   { label: "Origens", path: "/origens-e-mapas" },
   { label: "Biblioteca", path: "/biblioteca" },
-  { label: "Glossário", path: "/glossario" }
+  { label: "Glossário", path: "/glossario" },
+  { label: "Quizzes", path: "/quizzes" },
+  { label: "Simuladores", path: "/simuladores" }
 ];
 
 export const pageMeta: Record<string, { title: string; description: string }> = {
@@ -54,5 +56,13 @@ export const pageMeta: Record<string, { title: string; description: string }> = 
   "/glossario": {
     title: "Glossário do Café — Universo do Café",
     description: "Pesquise termos técnicos de café, barismo, sensorial, torra, preparo e qualidade."
+  },
+  "/quizzes": {
+    title: "Quizzes de Café e Barismo — Universo do Café",
+    description: "Teste seus conhecimentos sobre fundamentos, métodos, espresso, latte art, cadeia do café e glossário técnico."
+  },
+  "/simuladores": {
+    title: "Simuladores de Barismo — Universo do Café",
+    description: "Use calculadora de receita, diagnóstico de espresso e comparador de métodos para estudar café de forma prática."
   }
 };

@@ -3,6 +3,21 @@ export type NavItem = {
   path: string;
 };
 
+export type LessonType = "trilha" | "metodo" | "glossario" | "profissao" | "quiz" | "ferramenta";
+
+export type LessonContent = {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  type: LessonType;
+  level: string;
+  duration: string;
+  path: string;
+  order: number;
+  topics: string[];
+};
+
 export type StudyPath = {
   number: string;
   title: string;
@@ -115,4 +130,21 @@ export type GlossaryTerm = {
   detail: string;
   category: string;
   relatedPath: string;
+};
+
+export type QuizQuestion = {
+  prompt: string;
+  options: string[];
+  answer: number;
+  feedback: string;
+};
+
+export type Quiz = {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  category: string;
+  relatedPath: string;
+  questions: QuizQuestion[];
 };

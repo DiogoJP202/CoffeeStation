@@ -1,6 +1,7 @@
 import "./styles.css";
 import { brewMethods } from "./data/brewingMethods";
 import { coffeeBasics, marketTypes, sensoryCards } from "./data/coffeeBasics";
+import { coreLessons, espressoDiagnostics, lessonContents, quizzes, slugify } from "./data/courseContent";
 import { coffeeJourney } from "./data/coffeeJourney";
 import { glossaryTerms } from "./data/glossary";
 import { homeHighlights, homeStats, studyPaths } from "./data/learningPaths";
@@ -10,7 +11,7 @@ import { professionals, stageLabels } from "./data/professionals";
 import { lattePatterns, milkDrinks, steamingErrors, steamingTips } from "./data/latteArt";
 import { photoTopics, quickGuides } from "./data/media";
 import { videoFilters, videos } from "./data/videos";
-import type { BrewMethod, MediaVisual, OriginPoint, Professional, VideoResource } from "./data/types";
+import type { BrewMethod, GlossaryTerm, MediaVisual, OriginPoint, Professional, Quiz, VideoResource } from "./data/types";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -24,6 +25,73 @@ const normalizePath = (path: string) => {
 };
 
 const getCurrentPath = () => normalizePath(window.location.pathname);
+
+const progressStorageKey = "universo-cafe-progress-v1";
+const quizStorageKey = "universo-cafe-quiz-v1";
+
+const escapeAttr = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const readProgress = () => {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(progressStorageKey) ?? "[]") as string[]);
+  } catch {
+    return new Set<string>();
+  }
+};
+
+const writeProgress = (items: Set<string>) => {
+  localStorage.setItem(progressStorageKey, JSON.stringify(Array.from(items)));
+};
+
+const isLessonComplete = (id: string) => readProgress().has(id);
+
+const getLessonByPath = (path: string) => lessonContents.find((lesson) => lesson.path === path);
+
+const getProgressStats = () => {
+  const completed = readProgress();
+  const done = coreLessons.filter((lesson) => completed.has(lesson.id)).length;
+  return {
+    done,
+    total: coreLessons.length,
+    percent: Math.round((done / coreLessons.length) * 100)
+  };
+};
+
+const renderProgressToggle = (lessonId: string, label = "Marcar como concluído") => {
+  const completed = isLessonComplete(lessonId);
+  return `
+    <button
+      class="progress-toggle ${completed ? "is-complete" : ""}"
+      type="button"
+      data-progress-toggle="${lessonId}"
+      aria-pressed="${completed}"
+    >
+      <span aria-hidden="true">${completed ? "✓" : "+"}</span>
+      ${completed ? "Concluído" : label}
+    </button>
+  `;
+};
+
+const renderPageProgress = (path: string) => {
+  const lesson = getLessonByPath(path);
+  if (!lesson) return "";
+
+  return `
+    <section class="section micro-section">
+      <div class="container">
+        <div class="lesson-progress-card reveal">
+          <div>
+            <p class="kicker">Progresso de estudo</p>
+            <h2>${lesson.title}</h2>
+            <p>${lesson.description}</p>
+          </div>
+          ${renderProgressToggle(lesson.id)}
+        </div>
+      </div>
+    </section>
+  `;
+};
 
 const list = (items: string[], className = "check-list") =>
   `<ul class="${className}">${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
@@ -74,13 +142,14 @@ const renderHeader = (path: string) => `
       </button>
       <nav class="site-nav" id="site-nav" data-nav aria-label="Navegação principal">
         ${mainNav
-          .map(
-            (item) => `
-              <a href="${item.path}" ${path === item.path ? 'aria-current="page" class="is-active"' : ""}>
+          .map((item) => {
+            const isActive = path === item.path || (item.path !== "/" && path.startsWith(`${item.path}/`));
+            return `
+              <a href="${item.path}" ${isActive ? 'aria-current="page" class="is-active"' : ""}>
                 ${item.label}
               </a>
-            `
-          )
+            `;
+          })
           .join("")}
       </nav>
       <a class="header-cta" href="/fundamentos">Começar estudo</a>
@@ -144,8 +213,55 @@ const renderNextCta = (label: string, title: string, text: string, href: string)
   </section>
 `;
 
+const renderProgressOverview = () => {
+  const stats = getProgressStats();
+  const nextLesson = coreLessons.find((lesson) => !isLessonComplete(lesson.id)) ?? coreLessons[0];
+
+  return `
+    <section class="section section-cream progress-section">
+      <div class="container">
+        <div class="progress-dashboard reveal">
+          <div class="progress-summary">
+            <p class="kicker">Seu ritmo</p>
+            <h2>${stats.percent}% da trilha principal concluída</h2>
+            <p>${stats.done} de ${stats.total} áreas marcadas. O progresso fica salvo neste navegador.</p>
+            <div class="progress-meter" aria-label="Progresso geral" role="meter" aria-valuenow="${stats.percent}" aria-valuemin="0" aria-valuemax="100">
+              <span style="width:${stats.percent}%"></span>
+            </div>
+            <a class="button primary" href="${nextLesson.path}">Continuar em ${nextLesson.title}</a>
+          </div>
+          <div class="progress-list">
+            ${coreLessons
+              .map(
+                (lesson) => `
+                  <article class="progress-item ${isLessonComplete(lesson.id) ? "is-complete" : ""}">
+                    <div>
+                      <span>${String(lesson.order).padStart(2, "0")}</span>
+                      <h3><a href="${lesson.path}">${lesson.title}</a></h3>
+                      <p>${lesson.duration} · ${lesson.level}</p>
+                    </div>
+                    ${renderProgressToggle(lesson.id, "Concluir")}
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+};
+
 const renderVideoCard = (video: VideoResource, featured = false) => `
-  <article class="video-card ${featured ? "featured" : ""}" data-video-card data-category="${video.category}">
+  <article
+    class="video-card ${featured ? "featured" : ""}"
+    data-video-card
+    data-library-card
+    data-type="video"
+    data-category="${video.category}"
+    data-level="${video.level}"
+    data-search="${escapeAttr(`${video.title} ${video.channel} ${video.category} ${video.level} ${video.related} ${video.description}`)}"
+  >
     <div class="video-shell" data-video-shell>
       <button class="video-load" type="button" data-video-id="${video.id}" aria-label="Carregar vídeo: ${video.title}">
         <span class="play-mark" aria-hidden="true"></span>
@@ -192,6 +308,8 @@ const renderHome = () => `
       </div>
     </div>
   </section>
+
+  ${renderProgressOverview()}
 
   <section class="section section-cream">
     <div class="container">
@@ -272,6 +390,7 @@ const renderFundamentos = () => `
       { label: "Seguir para campo", href: "/do-campo-a-xicara", variant: "secondary" }
     ]
   )}
+  ${renderPageProgress("/fundamentos")}
   <section class="section section-cream">
     <div class="container">
       ${renderInternalNav(coffeeBasics.map((item) => ({ label: item.title, href: `#${item.id}` })))}
@@ -316,6 +435,7 @@ const renderJourneyPage = () => `
     "A qualidade é construída em etapas.",
     "Cada decisão pode preservar, ampliar ou comprometer o potencial do café. A timeline mostra impacto no sabor, detalhe técnico e profissional envolvido."
   )}
+  ${renderPageProgress("/do-campo-a-xicara")}
   <section class="section section-olive">
     <div class="container">
       ${renderInternalNav(coffeeJourney.map((step) => ({ label: step.title, href: `#${step.id}` })))}
@@ -363,6 +483,7 @@ const renderProfessionCard = (professional: Professional) => `
       <div><strong>Habilidades</strong>${list(professional.skills, "chip-list")}</div>
       <div><strong>Ferramentas</strong>${list(professional.tools, "chip-list")}</div>
     </div>
+    <a class="text-link" href="/profissionais/${slugify(professional.title)}">Ver página da carreira</a>
   </article>
 `;
 
@@ -372,6 +493,7 @@ const renderProfessionalsPage = () => `
     "A xícara é uma cadeia de trabalho.",
     "Do campo à cafeteria, cada área contribui para qualidade, rastreabilidade, consistência e experiência."
   )}
+  ${renderPageProgress("/profissionais")}
   <section class="section section-dark">
     <div class="container">
       <div class="filter-bar" aria-label="Filtros de profissionais">
@@ -431,6 +553,7 @@ const renderBarismoPage = () => `
     "Preparar bem é observar, medir e ajustar.",
     "O barista entende o que está acontecendo na extração. Esta página organiza fundamentos, diagnóstico e equipamentos para prática."
   )}
+  ${renderPageProgress("/barismo")}
   <section class="section section-copper">
     <div class="container">
       ${renderInternalNav([
@@ -510,6 +633,7 @@ const renderMethodSection = (method: BrewMethod) => `
         <div><dt>Melhor para</dt><dd>${method.bestFor}</dd></div>
         <div><dt>Copo sugerido</dt><dd>${method.vessel}</dd></div>
       </dl>
+      <a class="text-link dark" href="/metodos/${method.id}">Abrir página completa</a>
       ${method.videoId ? renderVideoCard(videos.find((video) => video.id === method.videoId) ?? videos[0]) : ""}
     </div>
   </article>
@@ -521,6 +645,7 @@ const renderMethodsPage = () => `
     "Escolha o método pelo efeito na xícara.",
     "Cada método mostra receita-base, moagem, tempo, temperatura, erros comuns, ajustes, perfil sensorial e vídeo recomendado."
   )}
+  ${renderPageProgress("/metodos")}
   <section class="section section-cream">
     <div class="container">
       ${renderInternalNav([
@@ -537,7 +662,7 @@ const renderMethodsPage = () => `
               .map(
                 (method) => `
                   <tr>
-                    <th><a href="#${method.id}">${method.name}</a></th>
+                    <th><a href="/metodos/${method.id}">${method.name}</a></th>
                     <td>${method.grind}</td>
                     <td>${method.time}</td>
                     <td>${method.body}</td>
@@ -565,6 +690,7 @@ const renderLattePage = () => `
     "Desenho bonito começa antes do leite tocar o espresso.",
     "Aprenda bebidas com leite, microespuma, vaporização, erros comuns, coração, tulipa, rosetta, treino e competições."
   )}
+  ${renderPageProgress("/latte-art")}
   <section class="section section-milk">
     <div class="container">
       ${renderInternalNav([
@@ -632,6 +758,7 @@ const renderOriginsPage = () => `
     "O sabor também tem endereço.",
     "Explore países produtores e regiões brasileiras sem inventar números: o foco aqui é identidade, espécie, perfil geral e relação com a xícara."
   )}
+  ${renderPageProgress("/origens-e-mapas")}
   <section class="section section-dark">
     <div class="container">
       ${renderInternalNav([
@@ -688,32 +815,64 @@ const renderBiblioteca = () => `
     "Vídeos, guias rápidos e recursos visuais para estudar no seu ritmo.",
     "Os vídeos não carregam automaticamente. Clique apenas nas aulas que quiser assistir."
   )}
+  ${renderPageProgress("/biblioteca")}
   <section class="section section-cream">
     <div class="container">
-      <div class="filter-bar light-filter" aria-label="Filtros da biblioteca">
-        ${videoFilters.map((filter, index) => `<button type="button" class="${index === 0 ? "is-active" : ""}" data-video-filter="${filter}">${filter}</button>`).join("")}
+      <div class="library-controls reveal">
+        <label class="search-label" for="library-search">Buscar na biblioteca</label>
+        <input id="library-search" type="search" placeholder="Busque por V60, espresso, latte art, torra..." autocomplete="off" data-library-search />
+        <div class="filter-bar light-filter" aria-label="Filtros por tema">
+          ${videoFilters.map((filter, index) => `<button type="button" class="${index === 0 ? "is-active" : ""}" data-library-filter="${filter}">${filter}</button>`).join("")}
+        </div>
+        <div class="select-filters">
+          <label>Tipo
+            <select data-library-type>
+              <option value="Todos">Todos</option>
+              <option value="video">Vídeos</option>
+              <option value="guia">Guias</option>
+              <option value="imagem">Imagens</option>
+            </select>
+          </label>
+          <label>Nível
+            <select data-library-level>
+              <option value="Todos">Todos</option>
+              <option value="Iniciante">Iniciante</option>
+              <option value="Intermedi">Intermediário</option>
+              <option value="Avan">Avançado</option>
+              <option value="Pratico">Prático</option>
+            </select>
+          </label>
+        </div>
       </div>
       <div class="video-grid library-grid">
         ${videos.map((video, index) => renderVideoCard(video, index === 0)).join("")}
-      </div>
-      ${sectionHeading("Galerias preparadas", "Fotos educativas por tema", "A estrutura já está pronta para receber fotos livres/licenciadas. Enquanto isso, os cards mantêm proporção, legenda e contexto.")}
-      <div class="photo-grid">
         ${photoTopics
           .map(
             (topic) => `
-              <article class="photo-topic reveal">
+              <article
+                class="photo-topic library-resource-card reveal"
+                data-library-card
+                data-type="imagem"
+                data-category="${topic.title}"
+                data-level="Pratico"
+                data-search="${escapeAttr(`${topic.title} ${topic.text}`)}"
+              >
                 ${renderMedia({ title: topic.title, alt: `Imagem educativa sobre ${topic.title}`, caption: topic.text, tone: topic.tone as MediaVisual["tone"] })}
               </article>
             `
           )
           .join("")}
-      </div>
-      ${sectionHeading("Guias rápidos", "Pratique hoje", "Pequenos exercícios para transformar leitura em percepção.")}
-      <div class="quick-grid">
         ${quickGuides
           .map(
             (guide) => `
-              <article class="quick-card reveal">
+              <article
+                class="quick-card library-resource-card reveal"
+                data-library-card
+                data-type="guia"
+                data-category="${guide.category}"
+                data-level="Pratico"
+                data-search="${escapeAttr(`${guide.title} ${guide.category} ${guide.text}`)}"
+              >
                 <p class="kicker">${guide.category}</p>
                 <h3>${guide.title}</h3>
                 <p>${guide.text}</p>
@@ -723,6 +882,7 @@ const renderBiblioteca = () => `
           )
           .join("")}
       </div>
+      <p class="empty-state library-empty" data-library-empty hidden>Nenhum recurso encontrado para esses filtros.</p>
       ${renderNextCta("Próximo conteúdo", "Consulte o glossário", "Pesquise termos técnicos e siga para páginas relacionadas.", "/glossario")}
     </div>
   </section>
@@ -734,6 +894,7 @@ const renderGlossary = () => `
     "Um vocabulário para estudar com precisão.",
     "Pesquise termos de sensorial, preparo, processo, torra, espresso, qualidade e profissões."
   )}
+  ${renderPageProgress("/glossario")}
   <section class="section section-cream">
     <div class="container">
       <div class="glossary-shell reveal">
@@ -748,13 +909,282 @@ const renderGlossary = () => `
                   <h2>${item.term}</h2>
                   <p><strong>${item.short}</strong></p>
                   <p>${item.detail}</p>
-                  <a class="text-link dark" href="${item.relatedPath}">Página relacionada</a>
+                  <a class="text-link dark" href="/glossario/${slugify(item.term)}">Abrir termo</a>
+                  <a class="text-link dark subtle-link" href="${item.relatedPath}">Página relacionada</a>
                 </article>
               `
             )
             .join("")}
         </div>
         <p class="empty-state" data-glossary-empty hidden>Nenhum termo encontrado.</p>
+      </div>
+    </div>
+  </section>
+`;
+
+const renderDetailProgressPanel = (lessonId: string, title: string, text: string, backHref: string, backLabel: string) => `
+  <section class="section micro-section">
+    <div class="container">
+      <div class="lesson-progress-card detail-progress-card reveal">
+        <div>
+          <p class="kicker">Página individual</p>
+          <h2>${title}</h2>
+          <p>${text}</p>
+          <a class="text-link dark" href="${backHref}">${backLabel}</a>
+        </div>
+        ${renderProgressToggle(lessonId)}
+      </div>
+    </div>
+  </section>
+`;
+
+const renderMethodDetailPage = (method: BrewMethod) => `
+  ${renderPageHero(
+    method.name,
+    `Método ${method.name}: receita, leitura e ajustes.`,
+    method.description,
+    [
+      { label: "Comparar métodos", href: "/simuladores#comparador", variant: "primary" },
+      { label: "Voltar aos métodos", href: "/metodos", variant: "secondary" }
+    ]
+  )}
+  ${renderDetailProgressPanel(
+    `metodo:${method.id}`,
+    `Estudo individual: ${method.name}`,
+    "Marque quando concluir leitura, receita-base, erros comuns e ajustes.",
+    "/metodos",
+    "Voltar para todos os métodos"
+  )}
+  <section class="section section-cream">
+    <div class="container">
+      ${renderMethodSection(method)}
+      <section class="study-next-grid reveal">
+        <article>
+          <p class="kicker">Pratica guiada</p>
+          <h2>Teste a receita no simulador</h2>
+          <p>Use dose e proporção para calcular água, comparar métodos e registrar hipóteses antes de preparar.</p>
+          <a class="button primary" href="/simuladores">Abrir simuladores</a>
+        </article>
+        <article>
+          <p class="kicker">Revisao</p>
+          <h2>Fixe com quiz</h2>
+          <p>Depois de estudar, responda perguntas curtas e veja feedback imediato.</p>
+          <a class="button secondary dark-button" href="/quizzes">Abrir quizzes</a>
+        </article>
+      </section>
+    </div>
+  </section>
+`;
+
+const renderProfessionalDetailPage = (professional: Professional) => `
+  ${renderPageHero(
+    professional.title,
+    `${professional.title}: papel, ferramentas e caminho de estudo.`,
+    professional.role,
+    [
+      { label: "Ver todos os profissionais", href: "/profissionais", variant: "primary" },
+      { label: "Estudar cadeia do café", href: "/do-campo-a-xicara", variant: "secondary" }
+    ]
+  )}
+  ${renderDetailProgressPanel(
+    `profissional:${slugify(professional.title)}`,
+    `Carreira: ${professional.title}`,
+    "Marque esta carreira como estudada depois de revisar habilidades, ferramentas e impacto na xícara.",
+    "/profissionais",
+    "Voltar para profissionais"
+  )}
+  <section class="section section-dark">
+    <div class="container">
+      <div class="profession-detail-grid reveal">
+        ${renderProfessionCard(professional)}
+        <article class="career-panel">
+          <p class="kicker">${stageLabels[professional.stage]}</p>
+          <h2>Como essa função muda o café</h2>
+          <dl class="card-dl">
+            <div><dt>Onde atua</dt><dd>${professional.place}</dd></div>
+            <div><dt>Impacto</dt><dd>${professional.impact}</dd></div>
+            <div><dt>Primeiro passo</dt><dd>${professional.start}</dd></div>
+          </dl>
+          <div class="feature-strip">
+            <a href="/fundamentos">Base sensorial</a>
+            <a href="/biblioteca">Aulas e guias</a>
+            <a href="/glossario">Termos técnicos</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+`;
+
+const renderGlossaryDetailPage = (term: GlossaryTerm) => `
+  ${renderPageHero(
+    term.term,
+    `${term.term}: significado no café.`,
+    term.short,
+    [
+      { label: "Voltar ao glossario", href: "/glossario", variant: "primary" },
+      { label: "Pagina relacionada", href: term.relatedPath, variant: "secondary" }
+    ]
+  )}
+  ${renderDetailProgressPanel(
+    `glossario:${slugify(term.term)}`,
+    `Termo técnico: ${term.term}`,
+    "Marque como revisado quando o termo fizer sentido dentro de uma receita, prova ou conversa técnica.",
+    "/glossario",
+    "Voltar ao glossario"
+  )}
+  <section class="section section-cream">
+    <div class="container">
+      <article class="glossary-detail reveal">
+        <p class="kicker">${term.category}</p>
+        <h2>${term.term}</h2>
+        <p><strong>${term.short}</strong></p>
+        <p>${term.detail}</p>
+        <dl class="inline-facts">
+          <div><dt>Categoria</dt><dd>${term.category}</dd></div>
+          <div><dt>Onde aplicar</dt><dd><a href="${term.relatedPath}">Abrir página relacionada</a></dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+`;
+
+const renderQuizPanel = (quiz: Quiz, index: number) => `
+  <section class="quiz-panel ${index === 0 ? "is-active" : ""}" data-quiz-panel="${quiz.id}" ${index === 0 ? "" : "hidden"}>
+    <div class="quiz-panel-head">
+      <div>
+        <p class="kicker">${quiz.category}</p>
+        <h2>${quiz.title}</h2>
+        <p>${quiz.description}</p>
+      </div>
+        <a class="text-link dark" href="${quiz.relatedPath}">Revisar conteúdo</a>
+    </div>
+    <form class="quiz-form" data-quiz-form="${quiz.id}">
+      ${quiz.questions
+        .map(
+          (question, questionIndex) => `
+            <fieldset class="quiz-question" data-question data-answer="${question.answer}">
+              <legend>${questionIndex + 1}. ${question.prompt}</legend>
+              ${question.options
+                .map(
+                  (option, optionIndex) => `
+                    <label>
+                      <input type="radio" name="${quiz.id}-${questionIndex}" value="${optionIndex}" />
+                      <span>${option}</span>
+                    </label>
+                  `
+                )
+                .join("")}
+              <p class="quiz-feedback" data-question-feedback hidden>${question.feedback}</p>
+            </fieldset>
+          `
+        )
+        .join("")}
+      <div class="quiz-actions">
+        <button class="button primary" type="submit">Corrigir quiz</button>
+        <p class="quiz-result" data-quiz-result aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+`;
+
+const renderQuizzesPage = () => `
+  ${renderPageHero(
+    "Quizzes",
+    "Aprenda melhor quando precisa responder.",
+    "Cada quiz tem poucas perguntas, feedback imediato e revisão indicada. Use como fechamento das trilhas.",
+    [
+      { label: "Comecar pelo primeiro", href: "#quiz-fundamentos", variant: "primary" },
+      { label: "Ver simuladores", href: "/simuladores", variant: "secondary" }
+    ]
+  )}
+  ${renderPageProgress("/quizzes")}
+  <section class="section section-cream">
+    <div class="container">
+      <div class="quiz-shell reveal" id="quiz-fundamentos">
+        <div class="filter-bar light-filter quiz-tabs" aria-label="Escolha de quiz">
+          ${quizzes
+            .map(
+              (quiz, index) => `
+                <button type="button" class="${index === 0 ? "is-active" : ""}" data-quiz-tab="${quiz.id}">
+                  ${quiz.title}
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+        ${quizzes.map(renderQuizPanel).join("")}
+      </div>
+    </div>
+  </section>
+`;
+
+const getMethodRatioValue = (method: BrewMethod) => {
+  if (method.id === "espresso") return 2;
+  if (method.id === "cold-brew") return 10;
+  if (method.id === "moka") return 7;
+
+  const match = method.ratio.match(/1:(\d+)/);
+  return match ? Number(match[1]) : 16;
+};
+
+const renderSimulatorsPage = () => `
+  ${renderPageHero(
+    "Simuladores",
+    "Ferramentas simples para pensar como barista.",
+    "Calcule receitas, diagnostique espresso e compare métodos antes de mexer em moagem, dose e tempo.",
+    [
+      { label: "Calcular receita", href: "#receita", variant: "primary" },
+      { label: "Fazer quizzes", href: "/quizzes", variant: "secondary" }
+    ]
+  )}
+  ${renderPageProgress("/simuladores")}
+  <section class="section section-copper">
+    <div class="container">
+      <div class="tool-grid">
+        <article class="tool-panel reveal" id="receita">
+          <p class="kicker">Receita</p>
+          <h2>Calculadora de proporção</h2>
+          <div class="form-grid">
+            <label>Dose de café (g)<input type="number" min="5" max="80" step="1" value="15" data-recipe-dose /></label>
+            <label>Proporcao<input type="number" min="2" max="20" step="0.5" value="16" data-recipe-ratio /></label>
+            <label>Método
+              <select data-recipe-method>
+                ${brewMethods.map((method) => `<option value="${method.id}" data-ratio="${getMethodRatioValue(method)}">${method.name}</option>`).join("")}
+              </select>
+            </label>
+          </div>
+          <div class="tool-result" data-recipe-output aria-live="polite"></div>
+        </article>
+
+        <article class="tool-panel reveal" id="espresso-diagnostico">
+          <p class="kicker">Espresso</p>
+          <h2>Diagnóstico rápido</h2>
+          <label class="full-label">Sintoma
+            <select data-espresso-diagnostic>
+              ${espressoDiagnostics.map((item) => `<option value="${item.id}">${item.label}</option>`).join("")}
+            </select>
+          </label>
+          <div class="tool-result" data-espresso-output aria-live="polite"></div>
+        </article>
+
+        <article class="tool-panel wide reveal" id="comparador">
+          <p class="kicker">Comparador</p>
+          <h2>Método contra método</h2>
+          <div class="form-grid two">
+            <label>Método A
+              <select data-compare-a>
+                ${brewMethods.map((method) => `<option value="${method.id}">${method.name}</option>`).join("")}
+              </select>
+            </label>
+            <label>Método B
+              <select data-compare-b>
+                ${brewMethods.map((method, index) => `<option value="${method.id}" ${index === 5 ? "selected" : ""}>${method.name}</option>`).join("")}
+              </select>
+            </label>
+          </div>
+          <div class="compare-output" data-compare-output aria-live="polite"></div>
+        </article>
       </div>
     </div>
   </section>
@@ -770,15 +1200,110 @@ const routes: Record<string, () => string> = {
   "/latte-art": renderLattePage,
   "/origens-e-mapas": renderOriginsPage,
   "/biblioteca": renderBiblioteca,
-  "/glossario": renderGlossary
+  "/glossario": renderGlossary,
+  "/quizzes": renderQuizzesPage,
+  "/simuladores": renderSimulatorsPage
+};
+
+const resolveRoute = (path: string): { path: string; render: () => string } => {
+  if (routes[path]) {
+    return { path, render: routes[path] };
+  }
+
+  if (path.startsWith("/metodos/")) {
+    const id = path.split("/").filter(Boolean).at(-1);
+    const method = brewMethods.find((item) => item.id === id);
+    if (method) return { path, render: () => renderMethodDetailPage(method) };
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    const slug = path.split("/").filter(Boolean).at(-1);
+    const professional = professionals.find((item) => slugify(item.title) === slug);
+    if (professional) return { path, render: () => renderProfessionalDetailPage(professional) };
+  }
+
+  if (path.startsWith("/glossario/")) {
+    const slug = path.split("/").filter(Boolean).at(-1);
+    const term = glossaryTerms.find((item) => slugify(item.term) === slug);
+    if (term) return { path, render: () => renderGlossaryDetailPage(term) };
+  }
+
+  return { path: "/", render: renderHome };
+};
+
+const getMetaForPath = (path: string) => {
+  if (pageMeta[path]) return pageMeta[path];
+
+  if (path.startsWith("/metodos/")) {
+    const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
+    if (method) {
+      return {
+        title: `${method.name} — Método de Preparo | Universo do Café`,
+        description: `${method.description} Receita, moagem, proporção, tempo, erros comuns e ajustes.`
+      };
+    }
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    const professional = professionals.find((item) => `/profissionais/${slugify(item.title)}` === path);
+    if (professional) {
+      return {
+        title: `${professional.title} no Café — Universo do Café`,
+        description: professional.role
+      };
+    }
+  }
+
+  if (path.startsWith("/glossario/")) {
+    const term = glossaryTerms.find((item) => `/glossario/${slugify(item.term)}` === path);
+    if (term) {
+      return {
+        title: `${term.term} no Café — Glossário | Universo do Café`,
+        description: `${term.short} ${term.detail}`
+      };
+    }
+  }
+
+  return pageMeta["/"];
 };
 
 const updateMeta = (path: string) => {
-  const meta = pageMeta[path] ?? pageMeta["/"];
+  const meta = getMetaForPath(path);
+  const canonicalUrl = `${window.location.origin}${path}`;
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
+  document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+
+  let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.append(canonical);
+  }
+  canonical.href = canonicalUrl;
+
+  let structuredData = document.querySelector<HTMLScriptElement>("#structured-data");
+  if (!structuredData) {
+    structuredData = document.createElement("script");
+    structuredData.id = "structured-data";
+    structuredData.type = "application/ld+json";
+    document.head.append(structuredData);
+  }
+  structuredData.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    name: meta.title,
+    description: meta.description,
+    url: canonicalUrl,
+    inLanguage: "pt-BR",
+    isAccessibleForFree: true,
+    provider: {
+      "@type": "Organization",
+      name: "Universo do Café"
+    }
+  });
 };
 
 const setupMenu = () => {
@@ -870,18 +1395,46 @@ const setupVideoEmbeds = () => {
 };
 
 const setupLibraryFilters = () => {
-  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-video-filter]"));
-  const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-video-card]"));
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-library-filter]"));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-library-card]"));
+  const search = document.querySelector<HTMLInputElement>("[data-library-search]");
+  const typeSelect = document.querySelector<HTMLSelectElement>("[data-library-type]");
+  const levelSelect = document.querySelector<HTMLSelectElement>("[data-library-level]");
+  const empty = document.querySelector<HTMLElement>("[data-library-empty]");
+
+  if (!cards.length) return;
+
+  const applyFilters = () => {
+    const activeCategory = buttons.find((button) => button.classList.contains("is-active"))?.dataset.libraryFilter ?? "Todos";
+    const query = normalizeText(search?.value.trim() ?? "");
+    const type = typeSelect?.value ?? "Todos";
+    const level = levelSelect?.value ?? "Todos";
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matchesCategory = activeCategory === "Todos" || card.dataset.category === activeCategory;
+      const matchesType = type === "Todos" || card.dataset.type === type;
+      const matchesLevel = level === "Todos" || normalizeText(card.dataset.level ?? "").includes(normalizeText(level));
+      const matchesQuery = !query || normalizeText(card.dataset.search ?? card.textContent ?? "").includes(query);
+      const isVisible = matchesCategory && matchesType && matchesLevel && matchesQuery;
+      card.hidden = !isVisible;
+      if (isVisible) visibleCount += 1;
+    });
+
+    if (empty) empty.hidden = visibleCount > 0;
+  };
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      const filter = button.dataset.videoFilter ?? "Todos";
       buttons.forEach((item) => item.classList.toggle("is-active", item === button));
-      cards.forEach((card) => {
-        card.hidden = filter !== "Todos" && card.dataset.category !== filter;
-      });
+      applyFilters();
     });
   });
+
+  search?.addEventListener("input", applyFilters);
+  typeSelect?.addEventListener("change", applyFilters);
+  levelSelect?.addEventListener("change", applyFilters);
+  applyFilters();
 };
 
 const setupProfessionalFilters = () => {
@@ -913,6 +1466,167 @@ const setupOrigins = () => {
       panel.innerHTML = renderOriginDetail(origin);
     });
   });
+};
+
+const setupProgressToggles = () => {
+  document.querySelectorAll<HTMLButtonElement>("[data-progress-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const lessonId = button.dataset.progressToggle;
+      if (!lessonId) return;
+
+      const completed = readProgress();
+      if (completed.has(lessonId)) {
+        completed.delete(lessonId);
+      } else {
+        completed.add(lessonId);
+      }
+      writeProgress(completed);
+
+      if (getCurrentPath() === "/") {
+        renderApp();
+        return;
+      }
+
+      document.querySelectorAll<HTMLButtonElement>(`[data-progress-toggle="${lessonId}"]`).forEach((item) => {
+        const isComplete = completed.has(lessonId);
+        item.classList.toggle("is-complete", isComplete);
+        item.setAttribute("aria-pressed", String(isComplete));
+        item.innerHTML = `<span aria-hidden="true">${isComplete ? "✓" : "+"}</span>${isComplete ? "Concluído" : "Marcar como concluído"}`;
+      });
+    });
+  });
+};
+
+const setupQuizzes = () => {
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-quiz-tab]"));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-quiz-panel]"));
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const quizId = tab.dataset.quizTab;
+      tabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+      panels.forEach((panel) => {
+        const isActive = panel.dataset.quizPanel === quizId;
+        panel.hidden = !isActive;
+        panel.classList.toggle("is-active", isActive);
+      });
+    });
+  });
+
+  document.querySelectorAll<HTMLFormElement>("[data-quiz-form]").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const questions = Array.from(form.querySelectorAll<HTMLElement>("[data-question]"));
+      const result = form.querySelector<HTMLElement>("[data-quiz-result]");
+      let score = 0;
+
+      questions.forEach((question) => {
+        const answer = Number(question.dataset.answer);
+        const selected = question.querySelector<HTMLInputElement>("input:checked");
+        const feedback = question.querySelector<HTMLElement>("[data-question-feedback]");
+        const isCorrect = selected ? Number(selected.value) === answer : false;
+        question.classList.toggle("is-correct", isCorrect);
+        question.classList.toggle("is-wrong", !isCorrect);
+        if (isCorrect) score += 1;
+        if (feedback) feedback.hidden = false;
+      });
+
+      if (result) {
+        result.textContent = `Resultado: ${score}/${questions.length}. ${score === questions.length ? "Dominou este tema." : "Revise os pontos com feedback e tente de novo."}`;
+      }
+
+      const quizId = form.dataset.quizForm;
+      if (!quizId) return;
+
+      const scores = JSON.parse(localStorage.getItem(quizStorageKey) ?? "{}") as Record<string, { score: number; total: number; date: string }>;
+      scores[quizId] = { score, total: questions.length, date: new Date().toISOString() };
+      localStorage.setItem(quizStorageKey, JSON.stringify(scores));
+
+      if (score / questions.length >= 0.67) {
+        const completed = readProgress();
+        completed.add("quizzes");
+        completed.add(`quiz:${quizId}`);
+        writeProgress(completed);
+      }
+    });
+  });
+};
+
+const setupSimulators = () => {
+  const doseInput = document.querySelector<HTMLInputElement>("[data-recipe-dose]");
+  const ratioInput = document.querySelector<HTMLInputElement>("[data-recipe-ratio]");
+  const methodSelect = document.querySelector<HTMLSelectElement>("[data-recipe-method]");
+  const recipeOutput = document.querySelector<HTMLElement>("[data-recipe-output]");
+
+  const updateRecipe = () => {
+    if (!doseInput || !ratioInput || !methodSelect || !recipeOutput) return;
+    const dose = Number(doseInput.value) || 0;
+    const ratio = Number(ratioInput.value) || 0;
+    const method = brewMethods.find((item) => item.id === methodSelect.value) ?? brewMethods[0];
+    const water = Math.round(dose * ratio);
+    recipeOutput.innerHTML = `
+      <strong>${dose} g de café + ${water} g de água</strong>
+      <span>${method.name}: ${method.grind}, ${method.time}, ${method.temperature}. Comece provando e ajuste uma variável por vez.</span>
+    `;
+  };
+
+  methodSelect?.addEventListener("change", () => {
+    const selected = methodSelect.selectedOptions[0];
+    if (ratioInput && selected?.dataset.ratio) ratioInput.value = selected.dataset.ratio;
+    updateRecipe();
+  });
+  doseInput?.addEventListener("input", updateRecipe);
+  ratioInput?.addEventListener("input", updateRecipe);
+  updateRecipe();
+
+  const diagnosticSelect = document.querySelector<HTMLSelectElement>("[data-espresso-diagnostic]");
+  const diagnosticOutput = document.querySelector<HTMLElement>("[data-espresso-output]");
+
+  const updateDiagnostic = () => {
+    if (!diagnosticSelect || !diagnosticOutput) return;
+    const diagnostic = espressoDiagnostics.find((item) => item.id === diagnosticSelect.value) ?? espressoDiagnostics[0];
+    diagnosticOutput.innerHTML = `
+      <strong>${diagnostic.cause}</strong>
+      ${list(diagnostic.actions)}
+    `;
+  };
+
+  diagnosticSelect?.addEventListener("change", updateDiagnostic);
+  updateDiagnostic();
+
+  const compareA = document.querySelector<HTMLSelectElement>("[data-compare-a]");
+  const compareB = document.querySelector<HTMLSelectElement>("[data-compare-b]");
+  const compareOutput = document.querySelector<HTMLElement>("[data-compare-output]");
+
+  const methodCompareCard = (method: BrewMethod) => `
+    <article>
+      <h3>${method.name}</h3>
+      <dl class="card-dl">
+        <div><dt>Moagem</dt><dd>${method.grind}</dd></div>
+        <div><dt>Tempo</dt><dd>${method.time}</dd></div>
+        <div><dt>Corpo</dt><dd>${method.body}</dd></div>
+        <div><dt>Acidez</dt><dd>${method.acidity}</dd></div>
+        <div><dt>Dificuldade</dt><dd>${method.difficulty}</dd></div>
+      </dl>
+      <a class="text-link dark" href="/metodos/${method.id}">Abrir página</a>
+    </article>
+  `;
+
+  const updateCompare = () => {
+    if (!compareA || !compareB || !compareOutput) return;
+    const methodA = brewMethods.find((item) => item.id === compareA.value) ?? brewMethods[0];
+    const methodB = brewMethods.find((item) => item.id === compareB.value) ?? brewMethods[1];
+    compareOutput.innerHTML = `
+      <div class="compare-cards">
+        ${methodCompareCard(methodA)}
+        ${methodCompareCard(methodB)}
+      </div>
+    `;
+  };
+
+  compareA?.addEventListener("change", updateCompare);
+  compareB?.addEventListener("change", updateCompare);
+  updateCompare();
 };
 
 const setupReveal = () => {
@@ -971,13 +1685,13 @@ const scrollAfterRender = () => {
 };
 
 const renderApp = () => {
-  const path = routes[getCurrentPath()] ? getCurrentPath() : "/";
-  updateMeta(path);
+  const route = resolveRoute(getCurrentPath());
+  updateMeta(route.path);
 
   app.innerHTML = `
-    ${renderHeader(path)}
+    ${renderHeader(route.path)}
     <main id="conteudo">
-      ${routes[path]()}
+      ${route.render()}
     </main>
     ${renderFooter()}
   `;
@@ -989,6 +1703,9 @@ const renderApp = () => {
   setupLibraryFilters();
   setupProfessionalFilters();
   setupOrigins();
+  setupProgressToggles();
+  setupQuizzes();
+  setupSimulators();
   setupReveal();
   setupLinks();
   scrollAfterRender();

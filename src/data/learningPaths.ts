@@ -1,9 +1,9 @@
 import type { StudyPath } from "./types";
 
 export const homeStats = [
-  { value: "10", label: "páginas gratuitas" },
+  { value: "12", label: "áreas gratuitas" },
   { value: "10", label: "vídeos curados" },
-  { value: "28", label: "termos de glossário" }
+  { value: "29", label: "termos de glossário" }
 ];
 
 export const studyPaths: StudyPath[] = [
