@@ -46,6 +46,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Coado tradicional",
       alt: "Café sendo preparado em filtro tradicional",
       caption: "Um método simples que ensina quase tudo sobre proporção e moagem.",
+      src: "/images/method-coado.webp",
       tone: "brew"
     }
   },
@@ -144,6 +145,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Melitta",
       alt: "Café coado em porta-filtro Melitta",
       caption: "Acessível, direto e ótimo para criar hábitos de medição.",
+      src: "/images/method-melitta.webp",
       tone: "brew"
     }
   },
@@ -192,6 +194,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Kalita",
       alt: "Preparo de café em Kalita com filtro ondulado",
       caption: "Fundo plano ajuda a estabilizar a extração.",
+      src: "/images/method-kalita.webp",
       tone: "brew"
     }
   },
@@ -240,6 +243,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Chemex",
       alt: "Café sendo preparado em Chemex",
       caption: "Filtro espesso entrega clareza e leveza.",
+      src: "/images/method-chemex.webp",
       tone: "brew"
     }
   },
@@ -339,6 +343,7 @@ export const brewMethods: BrewMethod[] = [
       title: "AeroPress",
       alt: "AeroPress preparada sobre uma caneca",
       caption: "Pequenas mudanças geram resultados perceptíveis.",
+      src: "/images/method-aeropress.webp",
       tone: "brew"
     }
   },
@@ -387,6 +392,7 @@ export const brewMethods: BrewMethod[] = [
       title: "Moka Italiana",
       alt: "Cafeteira moka italiana no fogão",
       caption: "Intensidade com controle de calor.",
+      src: "/images/method-moka.webp",
       tone: "espresso"
     }
   },

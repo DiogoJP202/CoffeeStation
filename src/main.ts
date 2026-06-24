@@ -985,7 +985,7 @@ const renderLattePage = () => `
           <p>Vaporizar é aquecer e incorporar ar. A textura ideal fica lisa, brilhante e cremosa.</p>
           ${list(steamingTips)}
         </div>
-        ${renderMedia({ title: "Latte art", alt: "Xícara com desenho de latte art", caption: "Contraste, crema e microespuma trabalham juntos.", tone: "latte" })}
+        ${renderMedia({ title: "Latte art", alt: "Xícara com desenho de latte art em microespuma", caption: "Contraste, crema e microespuma trabalham juntos.", src: "/images/latte-art-patterns.webp", tone: "latte" })}
       </section>
       <div class="comparison-grid">
         ${steamingErrors.map((error) => `<article class="reveal"><h3>${error.title}</h3><p>${error.fix}</p></article>`).join("")}
@@ -1730,6 +1730,8 @@ const getOgImageForPath = (path: string) => {
     const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
     if (method?.media.src) return method.media.src.replace(/\.webp$/, ".jpg");
   }
+
+  if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
 
   return "/images/og-coffee-study.jpg";
 };

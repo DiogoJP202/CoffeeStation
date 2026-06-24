@@ -5,10 +5,17 @@ O site foi preparado para aceitar fotos reais sem mudar a arquitetura. Use image
 Assets gerados para esta versão:
 
 - `coffee-hero.webp` / `coffee-hero-960.webp` — imagem principal da primeira dobra.
+- `method-coado.webp` / `method-coado.jpg` — imagem editorial de coado tradicional.
+- `method-melitta.webp` / `method-melitta.jpg` — imagem editorial de preparo em Melitta.
+- `method-kalita.webp` / `method-kalita.jpg` — imagem editorial de preparo em Kalita.
+- `method-chemex.webp` / `method-chemex.jpg` — imagem editorial de preparo em Chemex.
 - `method-v60.webp` / `method-v60.jpg` — imagem editorial de preparo em V60.
+- `method-aeropress.webp` / `method-aeropress.jpg` — imagem editorial de preparo em AeroPress.
+- `method-moka.webp` / `method-moka.jpg` — imagem editorial de moka italiana.
 - `method-espresso.webp` / `method-espresso.jpg` — imagem editorial de extração de espresso.
 - `method-prensa.webp` / `method-prensa.jpg` — imagem editorial de prensa francesa.
 - `method-cold-brew.webp` / `method-cold-brew.jpg` — imagem editorial de cold brew.
+- `latte-art-patterns.webp` / `latte-art-patterns.jpg` — imagem editorial de latte art.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
