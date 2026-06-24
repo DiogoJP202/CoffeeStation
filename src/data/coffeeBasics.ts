@@ -37,7 +37,7 @@ export const coffeeBasics: ConceptBlock[] = [
       title: "Mesa de estudo",
       alt: "Xícara de café ao lado de caderno de estudo",
       caption: "A nova plataforma trata café como estudo aberto, não como produto fechado.",
-      src: "/images/coffee-hero.png",
+      src: "/images/coffee-hero.webp",
       tone: "brew"
     }
   },

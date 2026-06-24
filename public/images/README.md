@@ -4,11 +4,12 @@ O site foi preparado para aceitar fotos reais sem mudar a arquitetura. Use image
 
 Assets gerados para esta versão:
 
-- `method-v60.png` — imagem editorial de preparo em V60.
-- `method-espresso.png` — imagem editorial de extração de espresso.
-- `method-prensa.png` — imagem editorial de prensa francesa.
-- `method-cold-brew.png` — imagem editorial de cold brew.
-- `og-coffee-study.png` — imagem ampla para compartilhamento social.
+- `coffee-hero.webp` / `coffee-hero-960.webp` — imagem principal da primeira dobra.
+- `method-v60.webp` / `method-v60.jpg` — imagem editorial de preparo em V60.
+- `method-espresso.webp` / `method-espresso.jpg` — imagem editorial de extração de espresso.
+- `method-prensa.webp` / `method-prensa.jpg` — imagem editorial de prensa francesa.
+- `method-cold-brew.webp` / `method-cold-brew.jpg` — imagem editorial de cold brew.
+- `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
 
@@ -37,3 +38,4 @@ Regras:
 - Manter crédito quando a licença pedir.
 - Usar `alt` informativo quando a imagem explica algo.
 - Usar `loading="lazy"` em imagens fora do hero.
+- Preferir WebP para imagens exibidas no site e JPEG para imagens de Open Graph/Twitter.

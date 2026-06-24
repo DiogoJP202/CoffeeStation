@@ -45,6 +45,34 @@ const assetPath = (path: string) => {
   return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 };
 
+const heroImage = {
+  small: "/images/coffee-hero-960.webp",
+  large: "/images/coffee-hero.webp"
+};
+
+const getHeroImageSrcSet = () => `${assetPath(heroImage.small)} 960w, ${assetPath(heroImage.large)} 1600w`;
+
+const syncHeroPreload = (path: string) => {
+  const existing = document.querySelector<HTMLLinkElement>('link[data-dynamic-preload="hero"]');
+
+  if (path !== "/") {
+    existing?.remove();
+    return;
+  }
+
+  const preload = existing ?? document.createElement("link");
+  preload.rel = "preload";
+  preload.as = "image";
+  preload.href = assetPath(heroImage.large);
+  preload.type = "image/webp";
+  preload.fetchPriority = "high";
+  preload.setAttribute("imagesrcset", getHeroImageSrcSet());
+  preload.setAttribute("imagesizes", "100vw");
+  preload.dataset.dynamicPreload = "hero";
+
+  if (!existing) document.head.append(preload);
+};
+
 const getCurrentPath = () => stripBasePath(window.location.pathname);
 
 const progressStorageKey = "universo-cafe-progress-v1";
@@ -376,7 +404,7 @@ const renderVideoCard = (video: VideoResource, featured = false) => `
 const renderHome = () => `
   <section class="hero-section" aria-labelledby="home-title">
     <div class="hero-media" aria-hidden="true">
-      <img src="${assetPath("/images/coffee-hero.png")}" alt="" />
+      <img src="${assetPath(heroImage.large)}" srcset="${getHeroImageSrcSet()}" sizes="100vw" alt="" width="1600" height="900" decoding="async" fetchpriority="high" />
     </div>
     <div class="hero-surface"></div>
     <div class="hero-content reveal">
@@ -1700,10 +1728,10 @@ const getMetaForPath = (path: string) => {
 const getOgImageForPath = (path: string) => {
   if (path.startsWith("/metodos/")) {
     const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
-    if (method?.media.src) return method.media.src;
+    if (method?.media.src) return method.media.src.replace(/\.webp$/, ".jpg");
   }
 
-  return "/images/og-coffee-study.png";
+  return "/images/og-coffee-study.jpg";
 };
 
 const getCanonicalUrl = (path: string) => `${productionOrigin}${productionBasePath}${path === "/" ? "/" : path}`;
@@ -1939,6 +1967,7 @@ const updateMeta = (path: string) => {
   const meta = getMetaForPath(path);
   const canonicalUrl = getCanonicalUrl(path);
   const ogImageUrl = getPublicAssetUrl(getOgImageForPath(path));
+  syncHeroPreload(path);
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:type"]')?.setAttribute("content", path === "/" ? "website" : "article");
