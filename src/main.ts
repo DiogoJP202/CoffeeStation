@@ -24,7 +24,27 @@ const normalizePath = (path: string) => {
   return cleanPath === "" ? "/" : cleanPath;
 };
 
-const getCurrentPath = () => normalizePath(window.location.pathname);
+const normalizedBasePath = normalizePath(`/${import.meta.env.BASE_URL.replace(/^\/+|\/+$/g, "")}`);
+const appBasePath = normalizedBasePath === "/" ? "" : normalizedBasePath;
+
+const stripBasePath = (path: string) => {
+  if (!appBasePath) return normalizePath(path);
+  if (path === appBasePath || path === `${appBasePath}/`) return "/";
+  if (path.startsWith(`${appBasePath}/`)) return normalizePath(path.slice(appBasePath.length));
+  return normalizePath(path);
+};
+
+const routeHref = (href: string) => {
+  if (!href.startsWith("/") || href.startsWith("//") || !appBasePath) return href;
+  return `${appBasePath}${href === "/" ? "/" : href}`;
+};
+
+const assetPath = (path: string) => {
+  if (/^https?:\/\//.test(path)) return path;
+  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+};
+
+const getCurrentPath = () => stripBasePath(window.location.pathname);
 
 const progressStorageKey = "universo-cafe-progress-v1";
 const quizStorageKey = "universo-cafe-quiz-v1";
@@ -107,7 +127,7 @@ const sectionHeading = (eyebrow: string, title: string, text: string) => `
 const renderMedia = (media: MediaVisual, className = "") => {
   const credit = media.credit ? `<small>${media.credit}</small>` : "";
   const visual = media.src
-    ? `<img src="${media.src}" alt="${media.alt}" loading="lazy" decoding="async" />`
+    ? `<img src="${assetPath(media.src)}" alt="${media.alt}" loading="lazy" decoding="async" />`
     : `<div class="media-placeholder" data-tone="${media.tone}" role="img" aria-label="${media.alt}">
         <span>${media.title}</span>
       </div>`;
@@ -285,7 +305,7 @@ const renderVideoCard = (video: VideoResource, featured = false) => `
 const renderHome = () => `
   <section class="hero-section" aria-labelledby="home-title">
     <div class="hero-media" aria-hidden="true">
-      <img src="/images/coffee-hero.png" alt="" />
+      <img src="${assetPath("/images/coffee-hero.png")}" alt="" />
     </div>
     <div class="hero-surface"></div>
     <div class="hero-content reveal">
@@ -1269,12 +1289,14 @@ const getMetaForPath = (path: string) => {
 
 const updateMeta = (path: string) => {
   const meta = getMetaForPath(path);
-  const canonicalUrl = `${window.location.origin}${path}`;
+  const canonicalUrl = `${window.location.origin}${routeHref(path)}`;
+  const ogImageUrl = new URL(assetPath("/images/coffee-hero.png"), window.location.origin).href;
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
   document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+  document.querySelector('meta[property="og:image"]')?.setAttribute("content", ogImageUrl);
 
   let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!canonical) {
@@ -1654,6 +1676,11 @@ const setupReveal = () => {
 
 const setupLinks = () => {
   document.querySelectorAll<HTMLAnchorElement>('a[href^="/"], a[href^="#"]').forEach((link) => {
+    const initialHref = link.getAttribute("href");
+    if (initialHref?.startsWith("/") && !initialHref.startsWith("//")) {
+      link.setAttribute("href", routeHref(initialHref));
+    }
+
     link.addEventListener("click", (event) => {
       const href = link.getAttribute("href");
       if (!href || link.target === "_blank") return;
@@ -1666,7 +1693,8 @@ const setupLinks = () => {
       if (url.origin !== window.location.origin) return;
 
       event.preventDefault();
-      history.pushState({}, "", `${url.pathname}${url.hash}`);
+      const routePath = stripBasePath(url.pathname);
+      history.pushState({}, "", `${routeHref(routePath)}${url.hash}`);
       renderApp();
     });
   });
