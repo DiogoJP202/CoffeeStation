@@ -588,8 +588,46 @@ const renderJourneyPage = () => `
   </section>
 `;
 
+const professionalStageVisuals: Record<Professional["stage"], { src: string; alt: string }> = {
+  campo: {
+    src: "/images/professional-field.webp",
+    alt: "Profissional avaliando cafeeiros e registros em uma lavoura"
+  },
+  processamento: {
+    src: "/images/professional-processing.webp",
+    alt: "Profissional conferindo secagem e processamento pós-colheita do café"
+  },
+  qualidade: {
+    src: "/images/professional-quality.webp",
+    alt: "Profissional avaliando amostras em uma mesa de cupping"
+  },
+  torra: {
+    src: "/images/professional-roasting.webp",
+    alt: "Mestre de torra verificando grãos em uma torrefação"
+  },
+  cafeteria: {
+    src: "/images/professional-cafe.webp",
+    alt: "Barista preparando espresso em uma cafeteria"
+  },
+  negocios: {
+    src: "/images/professional-business.webp",
+    alt: "Profissional comparando amostras e planejando compras de café"
+  }
+};
+
+const renderProfessionalMedia = (professional: Professional) => {
+  const visual = professionalStageVisuals[professional.stage];
+
+  return `
+    <div class="profession-media">
+      <img src="${assetPath(visual.src)}" alt="${visual.alt}" loading="lazy" decoding="async" />
+    </div>
+  `;
+};
+
 const renderProfessionCard = (professional: Professional) => `
   <article class="profession-card reveal" data-professional-card data-stage="${professional.stage}">
+    ${renderProfessionalMedia(professional)}
     <p class="kicker">${stageLabels[professional.stage]}</p>
     <h3>${professional.title}</h3>
     <p>${professional.role}</p>
@@ -1736,6 +1774,7 @@ const getOgImageForPath = (path: string) => {
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
   if (path === "/origens-e-mapas") return "/images/origin-sul-de-minas.jpg";
   if (path === "/biblioteca") return "/images/library-manual-methods.jpg";
+  if (path === "/profissionais") return "/images/professional-field.jpg";
 
   return "/images/og-coffee-study.jpg";
 };

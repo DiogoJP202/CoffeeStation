@@ -1024,6 +1024,26 @@ summary {
   box-shadow: var(--shadow);
 }
 
+.profession-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.profession-media {
+  aspect-ratio: 3 / 2;
+  margin: -22px -22px 18px;
+  border-bottom: 1px solid var(--line-dark);
+  background: rgba(255, 248, 236, 0.08);
+  overflow: hidden;
+}
+
+.profession-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .card-dl {
   display: grid;
   gap: 10px;
@@ -2345,6 +2365,10 @@ th {
   .workflow-panel,
   .career-panel {
     padding: 18px;
+  }
+
+  .profession-media {
+    margin: -18px -18px 16px;
   }
 
   .next-lesson,

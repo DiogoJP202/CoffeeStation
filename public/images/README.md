@@ -53,6 +53,12 @@ Assets gerados para esta versão:
 - `library-manual-methods.webp` / `library-manual-methods.jpg` — imagem editorial para o tópico de métodos manuais da biblioteca.
 - `library-ready-drinks.webp` / `library-ready-drinks.jpg` — imagem editorial para o tópico de cafés prontos da biblioteca.
 - `library-tools.webp` / `library-tools.jpg` — imagem editorial para o tópico de ferramentas da biblioteca.
+- `professional-field.webp` / `professional-field.jpg` — imagem editorial para profissionais de campo.
+- `professional-processing.webp` / `professional-processing.jpg` — imagem editorial para processamento pós-colheita.
+- `professional-quality.webp` / `professional-quality.jpg` — imagem editorial para qualidade e cupping.
+- `professional-roasting.webp` / `professional-roasting.jpg` — imagem editorial para torra.
+- `professional-cafe.webp` / `professional-cafe.jpg` — imagem editorial para cafeteria e barismo.
+- `professional-business.webp` / `professional-business.jpg` — imagem editorial para negócios, compra e gestão.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
