@@ -396,7 +396,7 @@ const renderVideoCard = (video: VideoResource, featured = false) => `
     data-type="video"
     data-category="${video.category}"
     data-level="${video.level}"
-    data-search="${escapeAttr(`${video.title} ${video.channel} ${video.category} ${video.level} ${video.related} ${video.description}`)}"
+    data-search="${escapeAttr(`vídeo aula ${video.title} ${video.channel} ${video.category} ${video.level} ${video.related} ${video.description}`)}"
   >
     <div class="video-shell" data-video-shell>
       <button class="video-load" type="button" data-video-id="${video.id}" aria-label="Carregar vídeo: ${video.title}">
@@ -1279,8 +1279,8 @@ const renderBiblioteca = () => `
             <select data-library-type>
               <option value="Todos">Todos</option>
               <option value="video">Vídeos</option>
-              <option value="guia">Guias</option>
               <option value="imagem">Imagens</option>
+              <option value="artigo">Artigos</option>
             </select>
           </label>
           <label>Nível
@@ -1294,43 +1294,76 @@ const renderBiblioteca = () => `
           </label>
         </div>
       </div>
-      <div class="video-grid library-grid">
-        ${videos.map((video, index) => renderVideoCard(video, index === 0)).join("")}
-        ${photoTopics
-          .map(
-            (topic) => `
-              <article
-                class="photo-topic library-resource-card reveal"
-                data-library-card
-                data-type="imagem"
-                data-category="${topic.title}"
-                data-level="Pratico"
-                data-search="${escapeAttr(`${topic.title} ${topic.text}`)}"
-              >
-                ${renderMedia({ title: topic.title, alt: `Imagem educativa sobre ${topic.title}`, caption: topic.text, src: topic.src, tone: topic.tone as MediaVisual["tone"] })}
-              </article>
-            `
-          )
-          .join("")}
-        ${quickGuides
-          .map(
-            (guide) => `
-              <article
-                class="quick-card library-resource-card reveal"
-                data-library-card
-                data-type="guia"
-                data-category="${guide.category}"
-                data-level="Pratico"
-                data-search="${escapeAttr(`${guide.title} ${guide.category} ${guide.text}`)}"
-              >
-                <p class="kicker">${guide.category}</p>
-                <h3>${guide.title}</h3>
-                <p>${guide.text}</p>
-                <a class="text-link dark" href="${guide.path}">Abrir guia</a>
-              </article>
-            `
-          )
-          .join("")}
+      <div class="library-stack">
+        <section class="library-section reveal" data-library-section>
+          <div class="library-section-head">
+            <div>
+              <p class="kicker">Aulas em vídeo</p>
+              <h2>Assista quando quiser aprofundar</h2>
+            </div>
+            <span data-library-count>0</span>
+          </div>
+          <div class="video-grid library-video-grid">
+            ${videos.map((video, index) => renderVideoCard(video, index === 0)).join("")}
+          </div>
+        </section>
+        <section class="library-section reveal" data-library-section>
+          <div class="library-section-head">
+            <div>
+              <p class="kicker">Galeria visual</p>
+              <h2>Imagens para reconhecer equipamentos, bebida e origem</h2>
+            </div>
+            <span data-library-count>0</span>
+          </div>
+          <div class="photo-grid library-photo-grid">
+            ${photoTopics
+              .map(
+                (topic) => `
+                  <article
+                    class="photo-topic library-resource-card"
+                    data-library-card
+                    data-type="imagem"
+                    data-category="${topic.category}"
+                    data-level="Pratico"
+                    data-search="${escapeAttr(`imagem foto galeria ${topic.title} ${topic.category} ${topic.text}`)}"
+                  >
+                    ${renderMedia({ title: topic.title, alt: `Imagem educativa sobre ${topic.title}`, caption: topic.text, src: topic.src, tone: topic.tone as MediaVisual["tone"] })}
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+        <section class="library-section reveal" data-library-section>
+          <div class="library-section-head">
+            <div>
+              <p class="kicker">Artigos e guias</p>
+              <h2>Leituras rápidas para praticar melhor</h2>
+            </div>
+            <span data-library-count>0</span>
+          </div>
+          <div class="quick-grid library-article-grid">
+            ${quickGuides
+              .map(
+                (guide) => `
+                  <article
+                    class="quick-card library-resource-card"
+                    data-library-card
+                    data-type="artigo"
+                    data-category="${guide.category}"
+                    data-level="Pratico"
+                    data-search="${escapeAttr(`artigo guia leitura ${guide.title} ${guide.category} ${guide.text}`)}"
+                  >
+                    <p class="kicker">${guide.category}</p>
+                    <h3>${guide.title}</h3>
+                    <p>${guide.text}</p>
+                    <a class="text-link dark" href="${guide.path}">Abrir guia</a>
+                  </article>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
       </div>
       <p class="empty-state library-empty" data-library-empty hidden>Nenhum recurso encontrado para esses filtros.</p>
       ${renderNextCta("Próximo conteúdo", "Consulte o glossário", "Pesquise termos técnicos e siga para páginas relacionadas.", "/glossario")}
@@ -2489,6 +2522,7 @@ const setupVideoEmbeds = () => {
 const setupLibraryFilters = () => {
   const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-library-filter]"));
   const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-library-card]"));
+  const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-library-section]"));
   const search = document.querySelector<HTMLInputElement>("[data-library-search]");
   const typeSelect = document.querySelector<HTMLSelectElement>("[data-library-type]");
   const levelSelect = document.querySelector<HTMLSelectElement>("[data-library-level]");
@@ -2511,6 +2545,14 @@ const setupLibraryFilters = () => {
       const isVisible = matchesCategory && matchesType && matchesLevel && matchesQuery;
       card.hidden = !isVisible;
       if (isVisible) visibleCount += 1;
+    });
+
+    sections.forEach((section) => {
+      const sectionCards = Array.from(section.querySelectorAll<HTMLElement>("[data-library-card]"));
+      const visibleCards = sectionCards.filter((card) => !card.hidden).length;
+      const count = section.querySelector<HTMLElement>("[data-library-count]");
+      section.hidden = visibleCards === 0;
+      if (count) count.textContent = `${visibleCards}/${sectionCards.length}`;
     });
 
     if (empty) empty.hidden = visibleCount > 0;

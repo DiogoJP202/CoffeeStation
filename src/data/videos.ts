@@ -4,6 +4,7 @@ export const videoFilters = [
   "Todos",
   "Fundamentos",
   "Métodos",
+  "Barismo",
   "Espresso",
   "Latte Art",
   "Origem",
