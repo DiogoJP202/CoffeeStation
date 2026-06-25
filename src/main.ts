@@ -287,15 +287,30 @@ const renderHeader = (path: string) => `
 const renderFooter = () => `
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div>
-        <strong>Universo do Café</strong>
-        <p>Uma academia aberta e gratuita para estudar café, barismo, métodos e origens.</p>
+      <div class="footer-about">
+        <a class="footer-brand" href="/" aria-label="Voltar para a página inicial">
+          <span>UC</span>
+          <strong>Universo do Café</strong>
+        </a>
+        <p>
+          Um site feito por Diogo Antonny, um amador amante de café, para ajudar outras pessoas
+          a conhecer um pouco mais sobre esse mundo.
+        </p>
       </div>
-      <nav aria-label="Links do rodapé">
+      <nav class="footer-nav" aria-label="Links do rodapé">
+        <p class="footer-title">Explorar</p>
+        <a href="/fundamentos">Fundamentos</a>
+        <a href="/metodos">Métodos</a>
         <a href="/biblioteca">Biblioteca</a>
         <a href="/glossario">Glossário</a>
-        <a href="/metodos">Métodos</a>
       </nav>
+      <div class="footer-contact">
+        <p class="footer-title">Contato</p>
+        <a href="https://br.linkedin.com/in/diogo-antonny" target="_blank" rel="noreferrer">LinkedIn <span>diogo-antonny</span></a>
+        <a href="https://github.com/DiogoJP202" target="_blank" rel="noreferrer">GitHub <span>DiogoJP202</span></a>
+        <a href="https://diogojp202.github.io/Portfolio/" target="_blank" rel="noreferrer">Portfólio <span>diogojp202.github.io</span></a>
+        <a href="https://www.instagram.com/ton.nyx3/" target="_blank" rel="noreferrer">Instagram <span>@ton.nyx3</span></a>
+      </div>
     </div>
   </footer>
 `;
