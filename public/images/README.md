@@ -41,6 +41,15 @@ Assets gerados para esta versão:
 - `method-prensa.webp` / `method-prensa.jpg` — imagem editorial de prensa francesa.
 - `method-cold-brew.webp` / `method-cold-brew.jpg` — imagem editorial de cold brew.
 - `latte-art-patterns.webp` / `latte-art-patterns.jpg` — imagem editorial de latte art.
+- `origin-sul-de-minas.webp` / `origin-sul-de-minas.jpg` — imagem editorial de paisagem cafeeira no Sul de Minas.
+- `origin-cerrado-mineiro.webp` / `origin-cerrado-mineiro.jpg` — imagem editorial de lavoura no Cerrado Mineiro.
+- `origin-mantiqueira-de-minas.webp` / `origin-mantiqueira-de-minas.jpg` — imagem editorial de cafezais montanhosos na Mantiqueira.
+- `origin-matas-de-minas.webp` / `origin-matas-de-minas.jpg` — imagem editorial de cafezal em área de mata e microclima úmido.
+- `origin-mogiana.webp` / `origin-mogiana.jpg` — imagem editorial de lavoura tradicional na Mogiana.
+- `origin-espirito-santo.webp` / `origin-espirito-santo.jpg` — imagem editorial de conilon no Espírito Santo.
+- `origin-chapada-diamantina.webp` / `origin-chapada-diamantina.jpg` — imagem editorial de cafezal de altitude na Chapada Diamantina.
+- `origin-rondonia.webp` / `origin-rondonia.jpg` — imagem editorial de canephora amazônico em Rondônia.
+- `origin-parana.webp` / `origin-parana.jpg` — imagem editorial de região cafeeira histórica no Paraná.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
