@@ -1976,6 +1976,26 @@ th {
   margin-bottom: 18px;
 }
 
+.tool-visual {
+  aspect-ratio: 3 / 2;
+  margin: 14px 0 18px;
+  border: 1px solid rgba(36, 22, 15, 0.1);
+  border-radius: 8px;
+  background: #f6ead7;
+  overflow: hidden;
+}
+
+.tool-panel.wide .tool-visual {
+  aspect-ratio: 16 / 6;
+}
+
+.tool-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .form-grid.two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -2388,6 +2408,10 @@ th {
   }
 
   .barismo-wide-media .media-frame {
+    aspect-ratio: 3 / 2;
+  }
+
+  .tool-panel.wide .tool-visual {
     aspect-ratio: 3 / 2;
   }
 

@@ -1622,6 +1622,12 @@ const renderExtractionJournal = () => {
   `;
 };
 
+const renderToolVisual = (src: string, alt: string) => `
+  <div class="tool-visual">
+    <img src="${assetPath(src)}" alt="${alt}" loading="lazy" decoding="async" />
+  </div>
+`;
+
 const renderSimulatorsPage = () => `
   ${renderPageHero(
     "Simuladores",
@@ -1640,6 +1646,7 @@ const renderSimulatorsPage = () => `
         <article class="tool-panel reveal" id="receita">
           <p class="kicker">Receita</p>
           <h2>Calculadora de proporção</h2>
+          ${renderToolVisual("/images/simulator-recipe.webp", "Balança e preparo de café para calcular dose e proporção")}
           <div class="form-grid">
             <label>Dose de café (g)<input type="number" min="5" max="80" step="1" value="15" data-recipe-dose /></label>
             <label>Proporcao<input type="number" min="2" max="20" step="0.5" value="16" data-recipe-ratio /></label>
@@ -1677,6 +1684,7 @@ const renderSimulatorsPage = () => `
         <article class="tool-panel reveal" id="espresso-diagnostico">
           <p class="kicker">Espresso</p>
           <h2>Diagnóstico rápido</h2>
+          ${renderToolVisual("/images/simulator-espresso.webp", "Comparação de extrações de espresso com portafiltro, balança e timer")}
           <label class="full-label">Sintoma
             <select data-espresso-diagnostic>
               ${espressoDiagnostics.map((item) => `<option value="${item.id}">${item.label}</option>`).join("")}
@@ -1688,6 +1696,7 @@ const renderSimulatorsPage = () => `
         <article class="tool-panel wide reveal" id="comparador">
           <p class="kicker">Comparador</p>
           <h2>Método contra método</h2>
+          ${renderToolVisual("/images/simulator-compare.webp", "Dois métodos manuais preparados lado a lado para comparação sensorial")}
           <div class="form-grid two">
             <label>Método A
               <select data-compare-a>
@@ -1712,6 +1721,7 @@ const renderSimulatorsPage = () => `
             </div>
             <a class="text-link dark" href="/metodos">Revisar métodos</a>
           </div>
+          ${renderToolVisual("/images/simulator-journal.webp", "Caderno de anotações ao lado de café preparado e ferramentas de extração")}
           <div data-journal-list>${renderExtractionJournal()}</div>
         </article>
       </div>
@@ -1810,6 +1820,7 @@ const getOgImageForPath = (path: string) => {
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
   if (path === "/barismo") return "/images/barismo-workflow.jpg";
+  if (path === "/simuladores") return "/images/simulator-recipe.jpg";
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
   if (path === "/origens-e-mapas") return "/images/origin-sul-de-minas.jpg";
   if (path === "/biblioteca") return "/images/library-manual-methods.jpg";

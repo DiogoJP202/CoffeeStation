@@ -68,6 +68,10 @@ Assets gerados para esta versão:
 - `barismo-workflow.webp` / `barismo-workflow.jpg` — imagem editorial para rotina de ajuste no barismo.
 - `barismo-diagnostic.webp` / `barismo-diagnostic.jpg` — imagem editorial para diagnóstico sensorial e comparação de xícaras.
 - `barismo-equipment.webp` / `barismo-equipment.jpg` — imagem editorial para equipamentos básicos de barismo.
+- `simulator-recipe.webp` / `simulator-recipe.jpg` — imagem editorial para calculadora de proporção.
+- `simulator-espresso.webp` / `simulator-espresso.jpg` — imagem editorial para diagnóstico rápido de espresso.
+- `simulator-compare.webp` / `simulator-compare.jpg` — imagem editorial para comparador de métodos.
+- `simulator-journal.webp` / `simulator-journal.jpg` — imagem editorial para diário de extrações.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
