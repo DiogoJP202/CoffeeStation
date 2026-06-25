@@ -50,6 +50,9 @@ Assets gerados para esta versão:
 - `origin-chapada-diamantina.webp` / `origin-chapada-diamantina.jpg` — imagem editorial de cafezal de altitude na Chapada Diamantina.
 - `origin-rondonia.webp` / `origin-rondonia.jpg` — imagem editorial de canephora amazônico em Rondônia.
 - `origin-parana.webp` / `origin-parana.jpg` — imagem editorial de região cafeeira histórica no Paraná.
+- `library-manual-methods.webp` / `library-manual-methods.jpg` — imagem editorial para o tópico de métodos manuais da biblioteca.
+- `library-ready-drinks.webp` / `library-ready-drinks.jpg` — imagem editorial para o tópico de cafés prontos da biblioteca.
+- `library-tools.webp` / `library-tools.jpg` — imagem editorial para o tópico de ferramentas da biblioteca.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:

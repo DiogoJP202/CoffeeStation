@@ -1154,7 +1154,7 @@ const renderBiblioteca = () => `
                 data-level="Pratico"
                 data-search="${escapeAttr(`${topic.title} ${topic.text}`)}"
               >
-                ${renderMedia({ title: topic.title, alt: `Imagem educativa sobre ${topic.title}`, caption: topic.text, tone: topic.tone as MediaVisual["tone"] })}
+                ${renderMedia({ title: topic.title, alt: `Imagem educativa sobre ${topic.title}`, caption: topic.text, src: topic.src, tone: topic.tone as MediaVisual["tone"] })}
               </article>
             `
           )
@@ -1735,6 +1735,7 @@ const getOgImageForPath = (path: string) => {
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
   if (path === "/origens-e-mapas") return "/images/origin-sul-de-minas.jpg";
+  if (path === "/biblioteca") return "/images/library-manual-methods.jpg";
 
   return "/images/og-coffee-study.jpg";
 };

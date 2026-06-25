@@ -26,10 +26,10 @@ export const quickGuides = [
 ];
 
 export const photoTopics = [
-  { title: "Grãos e torra", text: "Close de grãos, diferenças de torra e textura.", tone: "beans" },
-  { title: "Métodos manuais", text: "V60, Chemex, Kalita, Melitta, prensa e AeroPress.", tone: "brew" },
-  { title: "Cafés prontos", text: "Espresso, coados, cold brew e bebidas com leite.", tone: "espresso" },
-  { title: "Campo e origem", text: "Cafeeiros, cerejas, secagem e fazendas.", tone: "farm" },
-  { title: "Latte art", text: "Coração, tulipa, rosetta, microespuma e treino.", tone: "latte" },
-  { title: "Ferramentas", text: "Balança, moedor, chaleira, tamper, pitcher e filtros.", tone: "tools" }
+  { title: "Grãos e torra", text: "Close de grãos, diferenças de torra e textura.", src: "/images/fundamentals-roasted-seeds.webp", tone: "beans" },
+  { title: "Métodos manuais", text: "V60, Chemex, Kalita, Melitta, prensa e AeroPress.", src: "/images/library-manual-methods.webp", tone: "brew" },
+  { title: "Cafés prontos", text: "Espresso, coados, cold brew e bebidas com leite.", src: "/images/library-ready-drinks.webp", tone: "espresso" },
+  { title: "Campo e origem", text: "Cafeeiros, cerejas, secagem e fazendas.", src: "/images/origin-sul-de-minas.webp", tone: "farm" },
+  { title: "Latte art", text: "Coração, tulipa, rosetta, microespuma e treino.", src: "/images/latte-art-patterns.webp", tone: "latte" },
+  { title: "Ferramentas", text: "Balança, moedor, chaleira, tamper, pitcher e filtros.", src: "/images/library-tools.webp", tone: "tools" }
 ];
