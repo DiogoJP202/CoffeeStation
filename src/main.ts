@@ -183,17 +183,19 @@ const getProgressStats = () => {
   };
 };
 
-const renderProgressToggle = (lessonId: string, label = "Marcar como concluído") => {
+const renderProgressToggle = (lessonId: string, label = "Marcar concluído", className = "", completeLabel = "Concluído") => {
   const completed = isLessonComplete(lessonId);
   return `
     <button
-      class="progress-toggle ${completed ? "is-complete" : ""}"
+      class="progress-toggle ${className} ${completed ? "is-complete" : ""}"
       type="button"
       data-progress-toggle="${lessonId}"
+      data-progress-label="${escapeAttr(label)}"
+      data-progress-complete-label="${escapeAttr(completeLabel)}"
       aria-pressed="${completed}"
     >
-      <span aria-hidden="true">${completed ? "✓" : "+"}</span>
-      ${completed ? "Concluído" : label}
+      <span class="progress-toggle-icon" aria-hidden="true">${completed ? "✓" : "+"}</span>
+      <span class="progress-toggle-label">${completed ? completeLabel : label}</span>
     </button>
   `;
 };
@@ -355,21 +357,30 @@ const renderProgressOverview = () => {
             </div>
             <a class="button primary" href="${nextLesson.path}">Continuar em ${nextLesson.title}</a>
           </div>
-          <div class="progress-list">
+          <div class="progress-list-panel" aria-label="Mapa da trilha principal">
+            <div class="progress-list-head">
+              <div>
+                <p class="kicker">Mapa rápido</p>
+                <h3>Escolha o próximo estudo</h3>
+              </div>
+              <span>${stats.done}/${stats.total}</span>
+            </div>
+            <div class="progress-list">
             ${coreLessons
               .map(
                 (lesson) => `
                   <article class="progress-item ${isLessonComplete(lesson.id) ? "is-complete" : ""}">
-                    <div>
-                      <span>${String(lesson.order).padStart(2, "0")}</span>
+                    <span class="progress-index">${String(lesson.order).padStart(2, "0")}</span>
+                    <div class="progress-copy">
                       <h3><a href="${lesson.path}">${lesson.title}</a></h3>
                       <p>${lesson.duration} · ${lesson.level}</p>
                     </div>
-                    ${renderProgressToggle(lesson.id, "Concluir")}
+                    ${renderProgressToggle(lesson.id, "Marcar", "progress-toggle-compact", "Feito")}
                   </article>
                 `
               )
               .join("")}
+            </div>
           </div>
         </div>
       </div>
@@ -2512,9 +2523,14 @@ const setupProgressToggles = () => {
       }
 
       document.querySelectorAll<HTMLButtonElement>(`[data-progress-toggle="${lessonId}"]`).forEach((item) => {
+        const openLabel = item.dataset.progressLabel ?? "Marcar concluído";
+        const completeLabel = item.dataset.progressCompleteLabel ?? "Concluído";
         item.classList.toggle("is-complete", isComplete);
         item.setAttribute("aria-pressed", String(isComplete));
-        item.innerHTML = `<span aria-hidden="true">${isComplete ? "✓" : "+"}</span>${isComplete ? "Concluído" : "Marcar como concluído"}`;
+        item.innerHTML = `
+          <span class="progress-toggle-icon" aria-hidden="true">${isComplete ? "✓" : "+"}</span>
+          <span class="progress-toggle-label">${isComplete ? completeLabel : openLabel}</span>
+        `;
       });
     });
   });
