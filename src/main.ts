@@ -1067,20 +1067,22 @@ const renderLattePage = () => `
       <div class="comparison-grid">
         ${steamingErrors.map((error) => `<article class="reveal"><h3>${error.title}</h3><p>${error.fix}</p></article>`).join("")}
       </div>
-      <div class="pattern-grid" id="padroes">
-        ${lattePatterns
-          .map(
-            (pattern) => `
-              <article class="pattern-card reveal">
-                <p class="kicker">${pattern.level}</p>
-                <h2>${pattern.title}</h2>
-                ${list(pattern.steps, "number-list")}
-                <p>${pattern.tip}</p>
-              </article>
-            `
-          )
-          .join("")}
-      </div>
+      <section id="treino">
+        <div class="pattern-grid" id="padroes">
+          ${lattePatterns
+            .map(
+              (pattern) => `
+                <article class="pattern-card reveal">
+                  <p class="kicker">${pattern.level}</p>
+                  <h2>${pattern.title}</h2>
+                  ${list(pattern.steps, "number-list")}
+                  <p>${pattern.tip}</p>
+                </article>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
       <section id="videos">
         ${sectionHeading("Aulas", "Vídeos recomendados", "Embeds carregam apenas quando você clica.")}
         <div class="video-grid">
