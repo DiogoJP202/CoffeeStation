@@ -825,6 +825,7 @@ const renderBarismoPage = () => `
           <h2>Como pensar antes de mexer na receita</h2>
           <p>Barismo melhora quando cada preparo vira uma pergunta clara. Use esta rotina para transformar erro em leitura.</p>
           <a class="button primary" href="/simuladores#diario">Abrir diário de extrações</a>
+          ${renderMedia({ title: "Rotina de ajuste", alt: "Barista ajustando moagem e registrando uma receita de espresso", caption: "Hipótese, medida e registro tornam o ajuste repetível.", src: "/images/barismo-workflow.webp", tone: "espresso" }, "barismo-panel-media")}
         </div>
         <div class="workflow-steps">
           ${baristaWorkflow.map((step) => `<article><h3>${step.title}</h3><p>${step.text}</p></article>`).join("")}
@@ -849,6 +850,7 @@ const renderBarismoPage = () => `
           <p class="kicker">Diagnóstico de sabor</p>
           <h2>O que a xícara está dizendo?</h2>
           <p>Ajustar café é criar hipótese, mudar uma variável por vez e provar de novo.</p>
+          ${renderMedia({ title: "Diagnóstico sensorial", alt: "Barista comparando xícaras para diagnosticar extração", caption: "Comparar xícaras ajuda a separar subextração, equilíbrio e excesso.", src: "/images/barismo-diagnostic.webp", tone: "brew" }, "barismo-panel-media")}
         </div>
         <div class="diagnostic-grid">
           <article class="diagnostic-card">
@@ -864,6 +866,7 @@ const renderBarismoPage = () => `
         </div>
       </section>
       ${sectionHeading("Ferramentas", "Equipamentos básicos", "Cada ferramenta resolve um problema de controle. Nem tudo é essencial no começo.")}
+      ${renderMedia({ title: "Equipamentos básicos", alt: "Bancada organizada com balança, moedor, chaleira, filtros, tamper e pitcher", caption: "Ferramentas dão consistência quando cada uma resolve uma variável clara.", src: "/images/barismo-equipment.webp", tone: "tools" }, "barismo-wide-media")}
       <div class="equipment-grid" id="equipamentos">
         ${equipmentCards
           .map(
@@ -1771,6 +1774,7 @@ const getOgImageForPath = (path: string) => {
 
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
+  if (path === "/barismo") return "/images/barismo-workflow.jpg";
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
   if (path === "/origens-e-mapas") return "/images/origin-sul-de-minas.jpg";
   if (path === "/biblioteca") return "/images/library-manual-methods.jpg";

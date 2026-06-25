@@ -1142,6 +1142,22 @@ summary {
   margin-top: 18px;
 }
 
+.barismo-panel-media {
+  margin-top: 22px;
+}
+
+.barismo-panel-media .media-frame {
+  aspect-ratio: 3 / 2;
+}
+
+.barismo-wide-media {
+  margin: 0 0 22px;
+}
+
+.barismo-wide-media .media-frame {
+  aspect-ratio: 16 / 6;
+}
+
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2369,6 +2385,10 @@ th {
 
   .profession-media {
     margin: -18px -18px 16px;
+  }
+
+  .barismo-wide-media .media-frame {
+    aspect-ratio: 3 / 2;
   }
 
   .next-lesson,

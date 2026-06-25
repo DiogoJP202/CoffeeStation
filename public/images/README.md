@@ -59,6 +59,9 @@ Assets gerados para esta versão:
 - `professional-roasting.webp` / `professional-roasting.jpg` — imagem editorial para torra.
 - `professional-cafe.webp` / `professional-cafe.jpg` — imagem editorial para cafeteria e barismo.
 - `professional-business.webp` / `professional-business.jpg` — imagem editorial para negócios, compra e gestão.
+- `barismo-workflow.webp` / `barismo-workflow.jpg` — imagem editorial para rotina de ajuste no barismo.
+- `barismo-diagnostic.webp` / `barismo-diagnostic.jpg` — imagem editorial para diagnóstico sensorial e comparação de xícaras.
+- `barismo-equipment.webp` / `barismo-equipment.jpg` — imagem editorial para equipamentos básicos de barismo.
 - `og-coffee-study.jpg` — imagem ampla para compartilhamento social.
 
 Sugestões de assets:
