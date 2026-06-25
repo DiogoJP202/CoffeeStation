@@ -2152,7 +2152,10 @@ const getOgImageForPath = (path: string) => {
   return "/images/og-coffee-study.jpg";
 };
 
-const getCanonicalUrl = (path: string) => `${productionOrigin}${productionBasePath}${path === "/" ? "/" : path}`;
+const getCanonicalUrl = (path: string) => {
+  const normalized = path === "/" ? "/" : `${path.replace(/\/$/, "")}/`;
+  return `${productionOrigin}${productionBasePath}${normalized}`;
+};
 
 const getPublicAssetUrl = (path: string) => {
   if (/^https?:\/\//.test(path)) return path;
