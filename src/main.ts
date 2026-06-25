@@ -1118,6 +1118,84 @@ const renderOriginDetail = (origin: OriginPoint) => `
   </article>
 `;
 
+const renderWorldCoffeeMap = () => `
+  <div class="coffee-map" role="group" aria-label="Mapa mundial com países produtores de café">
+    <svg class="world-map-svg" viewBox="0 0 1000 520" role="img" aria-label="Mapa-múndi com cinturão do café e países produtores destacados" focusable="false">
+      <defs>
+        <linearGradient id="mapOcean" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#101607" />
+          <stop offset="56%" stop-color="#1b130d" />
+          <stop offset="100%" stop-color="#25170f" />
+        </linearGradient>
+        <linearGradient id="mapBelt" x1="0" x2="1">
+          <stop offset="0%" stop-color="#c68a4a" stop-opacity="0.08" />
+          <stop offset="45%" stop-color="#c68a4a" stop-opacity="0.26" />
+          <stop offset="100%" stop-color="#6f7d3c" stop-opacity="0.18" />
+        </linearGradient>
+      </defs>
+      <rect class="map-ocean" x="0" y="0" width="1000" height="520" rx="18" />
+      <rect class="coffee-belt" x="28" y="190" width="944" height="138" rx="18" />
+      <g class="map-grid" aria-hidden="true">
+        <path d="M0 130 H1000" />
+        <path d="M0 190 H1000" />
+        <path d="M0 260 H1000" />
+        <path d="M0 328 H1000" />
+        <path d="M120 0 V520" />
+        <path d="M250 0 V520" />
+        <path d="M380 0 V520" />
+        <path d="M510 0 V520" />
+        <path d="M640 0 V520" />
+        <path d="M770 0 V520" />
+        <path d="M900 0 V520" />
+      </g>
+      <g class="world-land" aria-hidden="true">
+        <path d="M84 140 C108 94 166 74 231 89 C277 100 317 124 341 160 C325 179 319 198 330 219 C298 223 278 237 256 261 C229 252 208 235 177 235 C137 235 111 209 96 184 C86 168 76 154 84 140 Z" />
+        <path d="M210 190 C236 184 266 194 289 215 C307 232 329 240 354 247 C347 260 318 260 292 248 C267 237 250 223 222 222 C207 221 197 205 210 190 Z" />
+        <path d="M298 248 C334 226 378 239 405 269 C429 296 419 334 402 362 C387 388 390 425 370 462 C354 491 325 479 316 443 C309 415 286 395 293 363 C300 336 276 318 282 288 C286 270 292 257 298 248 Z" />
+        <path d="M464 139 C498 116 550 112 592 134 C622 151 629 183 609 209 C574 215 548 203 520 219 C492 235 452 226 438 198 C427 174 440 153 464 139 Z" />
+        <path d="M525 182 C572 151 639 174 665 229 C690 279 657 315 647 360 C636 409 596 430 562 395 C528 360 501 315 508 260 C512 224 502 198 525 182 Z" />
+        <path d="M619 142 C667 108 759 104 827 134 C870 153 899 198 879 236 C844 238 819 259 787 248 C754 237 736 216 709 218 C677 221 659 202 633 209 C611 215 592 191 602 168 C606 157 613 149 619 142 Z" />
+        <path d="M696 224 C723 224 750 242 758 268 C739 277 714 268 702 247 C697 239 693 231 696 224 Z" />
+        <path d="M763 288 C802 277 862 286 903 311 C881 333 821 337 777 319 C758 311 746 296 763 288 Z" />
+        <path d="M802 374 C840 360 893 372 921 404 C899 432 841 432 804 407 C789 397 785 384 802 374 Z" />
+        <path d="M654 361 C672 352 686 363 688 382 C675 397 657 390 653 373 Z" />
+      </g>
+      <g class="map-lines" aria-hidden="true">
+        <path d="M28 190 H972" />
+        <path d="M28 260 H972" />
+        <path d="M28 328 H972" />
+        <text x="38" y="182">Trópico de Câncer</text>
+        <text x="38" y="253">Equador</text>
+        <text x="38" y="321">Trópico de Capricórnio</text>
+      </g>
+    </svg>
+    <div class="map-points" role="group" aria-label="Países produtores destacados">
+      ${originPoints
+        .map(
+          (origin, index) => `
+            <button
+              class="map-point ${origin.x >= 70 ? "label-left" : ""} ${index === 0 ? "is-active" : ""}"
+              data-origin="${origin.id}"
+              style="--x:${origin.x};--y:${origin.y}"
+              type="button"
+              aria-label="Ver ${escapeAttr(origin.name)}"
+              aria-pressed="${index === 0 ? "true" : "false"}"
+              aria-controls="origin-detail-panel"
+            >
+              <span class="map-point-dot" aria-hidden="true"></span>
+              <span class="map-point-label">${origin.name}</span>
+            </button>
+          `
+        )
+        .join("")}
+    </div>
+    <div class="map-legend" aria-hidden="true">
+      <span><i></i>Cinturão do café</span>
+      <span>Toque nos pontos para comparar perfis</span>
+    </div>
+  </div>
+`;
+
 const renderOriginsPage = () => `
   ${renderPageHero(
     "Origens e mapas",
@@ -1153,23 +1231,8 @@ const renderOriginsPage = () => `
         </div>
       </section>
       <div class="map-layout reveal" id="mapa-mundial">
-        <div class="coffee-map" aria-label="Mapa estilizado de origens produtoras">
-          <svg viewBox="0 0 100 70" role="img" aria-label="Cinturão do café com pontos de países produtores">
-            <rect x="3" y="8" width="94" height="50" rx="8"></rect>
-            <path d="M10 34 C24 18, 38 21, 49 34 S76 50, 91 32"></path>
-            <path d="M9 44 C25 53, 41 47, 55 39 S79 27, 92 42"></path>
-          </svg>
-          ${originPoints
-            .map(
-              (origin, index) => `
-                <button class="map-point ${index === 0 ? "is-active" : ""}" data-origin="${origin.id}" style="--x:${origin.x};--y:${origin.y}" type="button">
-                  <span class="sr-only">${origin.name}</span>
-                </button>
-              `
-            )
-            .join("")}
-        </div>
-        <div data-origin-panel>${renderOriginDetail(originPoints[0])}</div>
+        ${renderWorldCoffeeMap()}
+        <div id="origin-detail-panel" data-origin-panel aria-live="polite">${renderOriginDetail(originPoints[0])}</div>
       </div>
       ${sectionHeading("Mapa do Brasil", "Regiões brasileiras para estudar", "Perfis gerais variam por fazenda, variedade, processo e torra; use os cards como orientação inicial.")}
       <div class="region-grid" id="brasil">
@@ -2492,6 +2555,7 @@ const setupOrigins = () => {
       const origin = originPoints.find((item) => item.id === button.dataset.origin);
       if (!origin) return;
       buttons.forEach((item) => item.classList.toggle("is-active", item === button));
+      buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
       panel.innerHTML = renderOriginDetail(origin);
     });
   });
