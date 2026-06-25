@@ -615,8 +615,38 @@ const professionalStageVisuals: Record<Professional["stage"], { src: string; alt
   }
 };
 
+const professionalSpecificVisuals: Record<string, { src: string; alt: string }> = {
+  "Agrônomo": {
+    src: "/images/professional-agronomo.webp",
+    alt: "Agrônomo inspecionando folhas e solo em uma lavoura de café"
+  },
+  "Classificador": {
+    src: "/images/professional-classificador.webp",
+    alt: "Classificador separando defeitos em amostras de café verde"
+  },
+  "Q-Grader": {
+    src: "/images/professional-q-grader.webp",
+    alt: "Q-Grader avaliando amostras em uma mesa de cupping"
+  },
+  "Latte artist": {
+    src: "/images/professional-latte-artist.webp",
+    alt: "Latte artist despejando leite vaporizado para formar um desenho na xícara"
+  },
+  "Gestor de cafeteria": {
+    src: "/images/professional-gestor-cafeteria.webp",
+    alt: "Gestor de cafeteria revisando operação e organização do balcão"
+  },
+  "Consultor de café": {
+    src: "/images/professional-consultor-cafe.webp",
+    alt: "Consultor de café demonstrando ajustes de extração em treinamento"
+  }
+};
+
+const getProfessionalVisual = (professional: Professional) =>
+  professionalSpecificVisuals[professional.title] ?? professionalStageVisuals[professional.stage];
+
 const renderProfessionalMedia = (professional: Professional) => {
-  const visual = professionalStageVisuals[professional.stage];
+  const visual = getProfessionalVisual(professional);
 
   return `
     <div class="profession-media">
@@ -1770,6 +1800,11 @@ const getOgImageForPath = (path: string) => {
   if (path.startsWith("/metodos/")) {
     const method = brewMethods.find((item) => `/metodos/${item.id}` === path);
     if (method?.media.src) return method.media.src.replace(/\.webp$/, ".jpg");
+  }
+
+  if (path.startsWith("/profissionais/")) {
+    const professional = professionals.find((item) => `/profissionais/${slugify(item.title)}` === path);
+    if (professional) return getProfessionalVisual(professional).src.replace(/\.webp$/, ".jpg");
   }
 
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";

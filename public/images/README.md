@@ -59,6 +59,12 @@ Assets gerados para esta versão:
 - `professional-roasting.webp` / `professional-roasting.jpg` — imagem editorial para torra.
 - `professional-cafe.webp` / `professional-cafe.jpg` — imagem editorial para cafeteria e barismo.
 - `professional-business.webp` / `professional-business.jpg` — imagem editorial para negócios, compra e gestão.
+- `professional-agronomo.webp` / `professional-agronomo.jpg` — imagem editorial específica para Agrônomo.
+- `professional-classificador.webp` / `professional-classificador.jpg` — imagem editorial específica para Classificador.
+- `professional-q-grader.webp` / `professional-q-grader.jpg` — imagem editorial específica para Q-Grader.
+- `professional-latte-artist.webp` / `professional-latte-artist.jpg` — imagem editorial específica para Latte artist.
+- `professional-gestor-cafeteria.webp` / `professional-gestor-cafeteria.jpg` — imagem editorial específica para Gestor de cafeteria.
+- `professional-consultor-cafe.webp` / `professional-consultor-cafe.jpg` — imagem editorial específica para Consultor de café.
 - `barismo-workflow.webp` / `barismo-workflow.jpg` — imagem editorial para rotina de ajuste no barismo.
 - `barismo-diagnostic.webp` / `barismo-diagnostic.jpg` — imagem editorial para diagnóstico sensorial e comparação de xícaras.
 - `barismo-equipment.webp` / `barismo-equipment.jpg` — imagem editorial para equipamentos básicos de barismo.
