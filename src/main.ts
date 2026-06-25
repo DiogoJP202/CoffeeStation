@@ -1262,6 +1262,110 @@ const renderBiblioteca = () => `
   </section>
 `;
 
+type GlossaryVisual = {
+  src: string;
+  alt: string;
+  caption: string;
+};
+
+type GlossaryGroup = {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  categories: string[];
+  visual: GlossaryVisual;
+};
+
+const glossaryOverviewVisual: GlossaryVisual = {
+  src: "/images/glossary-reference.webp",
+  alt: "Mesa de estudo com caderno, cartões, colher de prova, grãos e ferramentas de café para consultar termos técnicos",
+  caption: "Use o glossário como ponte entre prova, receita e conversa técnica."
+};
+
+const glossaryGroups: GlossaryGroup[] = [
+  {
+    id: "sensorial",
+    label: "Sensorial",
+    title: "Sensorial e qualidade",
+    description: "Acidez, corpo, finalização, aroma, cupping e leitura de qualidade.",
+    categories: ["Sensorial", "Qualidade"],
+    visual: {
+      src: "/images/glossary-sensory.webp",
+      alt: "Mesa de cupping com xícaras, colheres, frascos aromáticos e cartões de avaliação sem texto legível",
+      caption: "Termos para descrever percepção e calibrar prova."
+    }
+  },
+  {
+    id: "preparo",
+    label: "Preparo",
+    title: "Preparo e barismo",
+    description: "Dose, moagem, proporção, bloom, extração e métodos filtrados.",
+    categories: ["Preparo", "Barismo", "Métodos"],
+    visual: {
+      src: "/images/glossary-brewing.webp",
+      alt: "Bancada com V60, chaleira, balança, moedor, filtros e café moído para estudar preparo",
+      caption: "Termos para controlar receita, fluxo e consistência."
+    }
+  },
+  {
+    id: "processo",
+    label: "Processo",
+    title: "Processo, torra e origem",
+    description: "Natural, lavado, honey, fermentação, terroir, espécies e perfil de torra.",
+    categories: ["Processo", "Torra", "Origem", "Espécies"],
+    visual: {
+      src: "/images/glossary-process.webp",
+      alt: "Sequência de cerejas de café, pergaminho, grãos verdes, grãos torrados e amostras de torra",
+      caption: "Termos para conectar origem, pós-colheita e torra."
+    }
+  },
+  {
+    id: "espresso-leite",
+    label: "Espresso",
+    title: "Espresso, leite e profissões",
+    description: "Crema, rendimento, microespuma, latte art, Q-Grader e papéis técnicos.",
+    categories: ["Espresso", "Latte Art", "Profissões"],
+    visual: {
+      src: "/images/glossary-espresso-milk.webp",
+      alt: "Bancada de cafeteria com espresso, porta-filtro, pitcher, latte art, tamper e cartões de avaliação",
+      caption: "Termos para leitura de bancada, leite e atuação profissional."
+    }
+  }
+];
+
+const getGlossaryGroupForCategory = (category: string) =>
+  glossaryGroups.find((group) => group.categories.includes(category)) ?? glossaryGroups[0];
+
+const renderGlossaryVisual = (visual: GlossaryVisual, className = "") => `
+  <figure class="glossary-visual ${className}">
+    <div class="glossary-visual-frame">
+      <img src="${assetPath(visual.src)}" alt="${visual.alt}" loading="lazy" decoding="async" />
+    </div>
+    <figcaption>${visual.caption}</figcaption>
+  </figure>
+`;
+
+const renderGlossaryTopicCards = () => `
+  <div class="glossary-topic-grid reveal" aria-label="Grupos de termos do glossário">
+    ${glossaryGroups
+      .map((group) => {
+        const total = glossaryTerms.filter((term) => group.categories.includes(term.category)).length;
+
+        return `
+          <button class="glossary-topic-card" type="button" data-glossary-filter="${group.id}" aria-pressed="false">
+            ${renderGlossaryVisual(group.visual)}
+            <span>${group.label}</span>
+            <strong>${group.title}</strong>
+            <small>${total} termos</small>
+            <p>${group.description}</p>
+          </button>
+        `;
+      })
+      .join("")}
+  </div>
+`;
+
 const renderGlossary = () => `
   ${renderPageHero(
     "Glossário",
@@ -1271,14 +1375,34 @@ const renderGlossary = () => `
   ${renderPageProgress("/glossario")}
   <section class="section section-cream">
     <div class="container">
+      <div class="glossary-overview reveal">
+        <div class="glossary-overview-copy">
+          <p class="kicker">Referência prática</p>
+          <h2>Termos técnicos conectados ao uso real</h2>
+          <p>Comece por um grupo de assunto ou pesquise direto. Cada termo aponta para uma página onde ele aparece em contexto.</p>
+          <div class="glossary-metrics" aria-label="Resumo do glossário">
+            <span><strong>${glossaryTerms.length}</strong> termos</span>
+            <span><strong>${new Set(glossaryTerms.map((term) => term.category)).size}</strong> categorias</span>
+            <span><strong>${glossaryGroups.length}</strong> grupos visuais</span>
+          </div>
+        </div>
+        ${renderGlossaryVisual(glossaryOverviewVisual, "glossary-overview-media")}
+      </div>
+      ${renderGlossaryTopicCards()}
       <div class="glossary-shell reveal">
         <label class="search-label" for="glossary-search">Buscar termo</label>
         <input id="glossary-search" type="search" placeholder="Digite acidez, V60, moagem, Q-Grader..." autocomplete="off" data-glossary-search />
+        <div class="filter-bar light-filter glossary-filter-bar" aria-label="Filtros do glossário">
+          <button type="button" class="is-active" data-glossary-filter="all" aria-pressed="true">Todos</button>
+          ${glossaryGroups.map((group) => `<button type="button" data-glossary-filter="${group.id}" aria-pressed="false">${group.label}</button>`).join("")}
+        </div>
         <div class="glossary-grid" data-glossary-list>
           ${glossaryTerms
-            .map(
-              (item) => `
-                <article class="glossary-card" data-glossary-card data-term="${item.term} ${item.short} ${item.detail} ${item.category}">
+            .map((item) => {
+              const group = getGlossaryGroupForCategory(item.category);
+
+              return `
+                <article class="glossary-card" data-glossary-card data-glossary-group="${group.id}" data-term="${item.term} ${item.short} ${item.detail} ${item.category} ${group.title}">
                   <p class="kicker">${item.category}</p>
                   <h2>${item.term}</h2>
                   <p><strong>${item.short}</strong></p>
@@ -1286,8 +1410,8 @@ const renderGlossary = () => `
                   <a class="text-link dark" href="/glossario/${slugify(item.term)}">Abrir termo</a>
                   <a class="text-link dark subtle-link" href="${item.relatedPath}">Página relacionada</a>
                 </article>
-              `
-            )
+              `;
+            })
             .join("")}
         </div>
         <p class="empty-state" data-glossary-empty hidden>Nenhum termo encontrado.</p>
@@ -1390,38 +1514,46 @@ const renderProfessionalDetailPage = (professional: Professional) => `
   </section>
 `;
 
-const renderGlossaryDetailPage = (term: GlossaryTerm) => `
-  ${renderPageHero(
-    term.term,
-    `${term.term}: significado no café.`,
-    term.short,
-    [
-      { label: "Voltar ao glossario", href: "/glossario", variant: "primary" },
-      { label: "Pagina relacionada", href: term.relatedPath, variant: "secondary" }
-    ]
-  )}
-  ${renderDetailProgressPanel(
-    `glossario:${slugify(term.term)}`,
-    `Termo técnico: ${term.term}`,
-    "Marque como revisado quando o termo fizer sentido dentro de uma receita, prova ou conversa técnica.",
-    "/glossario",
-    "Voltar ao glossario"
-  )}
-  <section class="section section-cream">
-    <div class="container">
-      <article class="glossary-detail reveal">
-        <p class="kicker">${term.category}</p>
-        <h2>${term.term}</h2>
-        <p><strong>${term.short}</strong></p>
-        <p>${term.detail}</p>
-        <dl class="inline-facts">
-          <div><dt>Categoria</dt><dd>${term.category}</dd></div>
-          <div><dt>Onde aplicar</dt><dd><a href="${term.relatedPath}">Abrir página relacionada</a></dd></div>
-        </dl>
-      </article>
-    </div>
-  </section>
-`;
+const renderGlossaryDetailPage = (term: GlossaryTerm) => {
+  const group = getGlossaryGroupForCategory(term.category);
+
+  return `
+    ${renderPageHero(
+      term.term,
+      `${term.term}: significado no café.`,
+      term.short,
+      [
+        { label: "Voltar ao glossário", href: "/glossario", variant: "primary" },
+        { label: "Página relacionada", href: term.relatedPath, variant: "secondary" }
+      ]
+    )}
+    ${renderDetailProgressPanel(
+      `glossario:${slugify(term.term)}`,
+      `Termo técnico: ${term.term}`,
+      "Marque como revisado quando o termo fizer sentido dentro de uma receita, prova ou conversa técnica.",
+      "/glossario",
+      "Voltar ao glossário"
+    )}
+    <section class="section section-cream">
+      <div class="container">
+        <article class="glossary-detail glossary-detail-rich reveal">
+          <div class="glossary-detail-copy">
+            <p class="kicker">${term.category}</p>
+            <h2>${term.term}</h2>
+            <p><strong>${term.short}</strong></p>
+            <p>${term.detail}</p>
+            <dl class="inline-facts">
+              <div><dt>Categoria</dt><dd>${term.category}</dd></div>
+              <div><dt>Grupo</dt><dd>${group.title}</dd></div>
+              <div><dt>Onde aplicar</dt><dd><a href="${term.relatedPath}">Abrir página relacionada</a></dd></div>
+            </dl>
+          </div>
+          ${renderGlossaryVisual(group.visual, "glossary-detail-media")}
+        </article>
+      </div>
+    </section>
+  `;
+};
 
 const getQuizAttempts = (score?: QuizScore) => {
   if (!score) return [];
@@ -1877,9 +2009,15 @@ const getOgImageForPath = (path: string) => {
     if (professional) return getProfessionalVisual(professional).src.replace(/\.webp$/, ".jpg");
   }
 
+  if (path.startsWith("/glossario/")) {
+    const term = glossaryTerms.find((item) => `/glossario/${slugify(item.term)}` === path);
+    if (term) return getGlossaryGroupForCategory(term.category).visual.src.replace(/\.webp$/, ".jpg");
+  }
+
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
   if (path === "/barismo") return "/images/barismo-workflow.jpg";
+  if (path === "/glossario") return "/images/glossary-reference.jpg";
   if (path === "/quizzes") return "/images/quiz-dashboard.jpg";
   if (path === "/simuladores") return "/images/simulator-recipe.jpg";
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
@@ -2203,22 +2341,48 @@ const setupGlossary = () => {
   const input = document.querySelector<HTMLInputElement>("[data-glossary-search]");
   const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-glossary-card]"));
   const empty = document.querySelector<HTMLElement>("[data-glossary-empty]");
+  const filterButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-glossary-filter]"));
 
   if (!input || !empty) return;
 
-  input.addEventListener("input", () => {
+  let activeFilter = "all";
+
+  const applyFilters = () => {
     const query = normalizeText(input.value.trim());
     let visibleCount = 0;
 
     cards.forEach((card) => {
       const source = normalizeText(card.dataset.term ?? card.textContent ?? "");
-      const isVisible = source.includes(query);
+      const matchesSearch = source.includes(query);
+      const matchesFilter = activeFilter === "all" || card.dataset.glossaryGroup === activeFilter;
+      const isVisible = matchesSearch && matchesFilter;
       card.hidden = !isVisible;
       if (isVisible) visibleCount += 1;
     });
 
+    filterButtons.forEach((button) => {
+      const isActive = button.dataset.glossaryFilter === activeFilter;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
     empty.hidden = visibleCount > 0;
+  };
+
+  input.addEventListener("input", applyFilters);
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.glossaryFilter ?? "all";
+      applyFilters();
+      trackEvent("coffee_glossary_filter", {
+        filter: activeFilter,
+        path: getCurrentPath()
+      });
+    });
   });
+
+  applyFilters();
 };
 
 const setupVideoEmbeds = () => {
