@@ -104,6 +104,12 @@ type QuizScore = QuizAttempt & {
   attempts?: QuizAttempt[];
 };
 
+type QuizVisual = {
+  src: string;
+  alt: string;
+  caption: string;
+};
+
 type ExtractionJournalEntry = {
   id: string;
   date: string;
@@ -1428,6 +1434,54 @@ const getBestQuizAttempt = (score?: QuizScore) =>
     return attempt.score / attempt.total > best.score / best.total ? attempt : best;
   }, undefined);
 
+const quizDashboardVisual: QuizVisual = {
+  src: "/images/quiz-dashboard.webp",
+  alt: "Mesa de estudos de café com cartões de quiz, gráficos de desempenho e utensílios de prova",
+  caption: "Acompanhe revisão, tentativa e tema mais fraco antes de voltar ao conteúdo."
+};
+
+const quizVisuals: Record<string, QuizVisual> = {
+  fundamentos: {
+    src: "/images/quiz-fundamentos.webp",
+    alt: "Amostras de cerejas, grãos verdes, grãos torrados e xícaras de prova para estudar fundamentos do café",
+    caption: "Planta, espécie, terroir e sensorial aparecem juntos na mesma base."
+  },
+  metodos: {
+    src: "/images/quiz-metodos.webp",
+    alt: "Bancada com V60, prensa francesa, AeroPress, chaleira, balança e moedor para revisar métodos de preparo",
+    caption: "Compare proporção, moagem, tempo e textura entre métodos."
+  },
+  espresso: {
+    src: "/images/quiz-espresso.webp",
+    alt: "Porta-filtro, balança, espresso e ferramentas de distribuição em uma bancada de calibração",
+    caption: "Dose, rendimento e fluxo ajudam a transformar sensação em ajuste."
+  },
+  "latte-art": {
+    src: "/images/quiz-latte-art.webp",
+    alt: "Xícara com latte art, pitcher e materiais de treino de microespuma",
+    caption: "Microespuma, altura de despejo e contraste sustentam o desenho."
+  },
+  cadeia: {
+    src: "/images/quiz-cadeia.webp",
+    alt: "Sequência de amostras com cerejas, pergaminho, grãos verdes, grãos torrados e xícara de café",
+    caption: "Cada etapa muda a qualidade percebida na xícara final."
+  },
+  glossario: {
+    src: "/images/quiz-glossario.webp",
+    alt: "Mesa de estudo com caderno, cartões, grãos, colher de prova e ferramentas de café para revisar termos técnicos",
+    caption: "Termos técnicos ficam mais úteis quando ligados à prática."
+  }
+};
+
+const renderQuizVisual = (visual: QuizVisual, className = "") => `
+  <figure class="quiz-visual ${className}">
+    <div class="quiz-visual-frame">
+      <img src="${assetPath(visual.src)}" alt="${visual.alt}" loading="lazy" decoding="async" />
+    </div>
+    <figcaption>${visual.caption}</figcaption>
+  </figure>
+`;
+
 const renderQuizScoreBadge = (quizId: string) => {
   const score = readQuizScores()[quizId];
   const lastAttempt = score ? { score: score.score, total: score.total, date: score.date } : undefined;
@@ -1462,10 +1516,13 @@ const renderQuizPerformanceContent = () => {
   const nextQuiz = summaries.find((item) => !item.mastered)?.quiz ?? quizzes[0];
 
   return `
-    <div>
-      <p class="kicker">Desempenho</p>
-      <h2>Seu mapa de revisão</h2>
-      <p>As tentativas ficam salvas neste navegador e ajudam a decidir o próximo tema para revisar.</p>
+    <div class="quiz-performance-main">
+      <div class="quiz-performance-copy">
+        <p class="kicker">Desempenho</p>
+        <h2>Seu mapa de revisão</h2>
+        <p>As tentativas ficam salvas neste navegador e ajudam a decidir o próximo tema para revisar.</p>
+      </div>
+      ${renderQuizVisual(quizDashboardVisual, "quiz-performance-media")}
     </div>
     <div class="quiz-stat-grid">
       <article><span>${attempted}/${quizzes.length}</span><strong>Quizzes tentados</strong></article>
@@ -1505,13 +1562,16 @@ const renderQuizPerformancePanel = () => `
 const renderQuizPanel = (quiz: Quiz, index: number) => `
   <section class="quiz-panel ${index === 0 ? "is-active" : ""}" data-quiz-panel="${quiz.id}" ${index === 0 ? "" : "hidden"}>
     <div class="quiz-panel-head">
-      <div>
+      <div class="quiz-panel-copy">
         <p class="kicker">${quiz.category}</p>
         <h2>${quiz.title}</h2>
         <p>${quiz.description}</p>
         ${renderQuizScoreBadge(quiz.id)}
       </div>
+      <div class="quiz-panel-aside">
+        ${renderQuizVisual(quizVisuals[quiz.id] ?? quizDashboardVisual)}
         <a class="text-link dark" href="${quiz.relatedPath}">Revisar conteúdo</a>
+      </div>
     </div>
     <form class="quiz-form" data-quiz-form="${quiz.id}">
       ${quiz.questions
@@ -1820,6 +1880,7 @@ const getOgImageForPath = (path: string) => {
   if (path === "/latte-art") return "/images/latte-art-patterns.jpg";
   if (path === "/fundamentos") return "/images/fundamentals-roasted-seeds.jpg";
   if (path === "/barismo") return "/images/barismo-workflow.jpg";
+  if (path === "/quizzes") return "/images/quiz-dashboard.jpg";
   if (path === "/simuladores") return "/images/simulator-recipe.jpg";
   if (path === "/do-campo-a-xicara") return "/images/journey-planting.jpg";
   if (path === "/origens-e-mapas") return "/images/origin-sul-de-minas.jpg";
